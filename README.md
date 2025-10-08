@@ -3,57 +3,63 @@ A Django + Firebase system for managing employees and clients with secure login 
 
 
 
-# feyti-medical-assistant
-AI Regulatory Report Assistant: Full-stack application built with Django REST Framework and React to structure adverse medical event reports using rule-based NLP logic.
+# 🧭 Employee & Client Management System (Firebase + Django)
 
+![Framework](https://img.shields.io/badge/Django%20Framework-green)
+![Database](https://img.shields.io/badge/Firebase-cloud%20%26%20storage-blue)
 
+📌 Overview
 
-# 🔬 AI Regulatory Report Assistant (Django/React Full-Stack)
+This is a role-based Employee & Client Management System built with Django on the backend and Firebase Authentication for secure user management.
 
-![Backend](https://img.shields.io/badge/Backend-Django%20REST%20Framework-green)
-![Frontend](https://img.shields.io/badge/Frontend-React%20%26%20Vercel-blue)
-![NLP Logic](https://img.shields.io/badge/Logic-Rule--Based%2FPython-informational)
+✅ Employees can log in and manage only the clients they register.
 
-## Project Overview
+👑 Admins have a dedicated dashboard to manage employees, view overall system data, and access advanced features.
 
-This is a full-stack take-home assignment simulating a core workflow for Feyti Medical Group's AIcyclinder platform. The application processes raw adverse event text reports and extracts key structured data points using Python logic, presenting the results via a decoupled React frontend.
+🔐 Access to different pages is restricted based on user roles (Admin or Employee).
 
-The project is split into two components:
-1.  **Backend:** A REST API built with Django REST Framework (DRF) handling the report processing and data storage.
-2.  **Frontend:** A modern web interface built with React (Vite) that consumes the API.
+🚀 All employee registrations happen via AJAX for a smooth user experience.
 
-**Live Demo:**
-* **Frontend (Vercel):** https://feyti-medical-group.vercel.app/
-* **Backend API (Render):** https://feyti-medical-group-backend.onrender.com/
+🏗️ Tech Stack
+Layer	Technology
+Backend	Django (Python)
+Authentication	Firebase Authentication
+Frontend	HTML, CSS, JavaScript, AJAX, jQuery
+Alerts / UI Feedback	SweetAlert2
+Database (optional)	Firebase Realtime DB or Firestore (optional for client data)
+Session Management	Django sessions
+🧑‍💻 Features
+🔐 Authentication
 
----
+Secure login and registration through Firebase Authentication.
 
-## Features Implemented
+Session-based access control in Django.
 
-### Core Requirements
-* **POST /api/process-report:** Accepts raw report text and returns structured JSON data.
-* **NLP/Rule-Based Logic:** Extracts Drug Name, Adverse Events, Severity, and Outcome.
-* **React Input Form:** A text area to paste reports and a "Process" button.
-* **Results Display:** Clear presentation of the structured data on the frontend.
+Role-based permissions (Admin vs Employee).
 
-### Bonus Features
-* **Simple Database (SQLite):** Reports are stored after processing.
-* **GET /api/reports:** Endpoint to fetch a history of all processed reports.
-* **Translation API:** **POST /api/translate** to translate the outcome to French/Swahili.
-* **History View:** A table on the frontend showing past reports.
+🧭 Admin Dashboard
 
----
+View total number of employees.
 
-## Technology Stack
+Register new employees via a modal form without page reload.
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Backend** | Python, Django, Django REST Framework | Handles API routing, database, and business logic. |
-| **Database** | SQLite3 (Default Django DB) | Simple persistent storage for processed reports. |
-| **Logic** | Custom Python Rule-Based Extractor | Uses string matching and regex for core extraction. |
-| **Frontend** | React (Vite), Axios | Single Page Application (SPA) for the user interface and API communication. |
-| **Deployment** | Vercel (Frontend), Render (Backend) | Hosted and accessible demo. |
+Live updates to dashboard using AJAX.
 
+View a list of registered employees.
+
+👷 Employee Dashboard
+
+View and manage only the clients they registered.
+
+Add, view, and edit client entries.
+
+Simplified and restricted access compared to admins.
+
+🛡️ Role-Based Access Control
+Role	Access
+Admin	Admin dashboard, register employees, view all employees and clients
+Employee	Employee dashboard, view and manage only their clients
+Guest	No access; redirected to login
 ---
 
 ## Getting Started (Local Development)
