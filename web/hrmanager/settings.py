@@ -172,8 +172,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-print(BASE_DIR)
-
 # Firebase Configuration
 # Initialize the Firebase Admin SDK.
 # The `serviceAccountKey.json` file should be placed at the root of your project.
@@ -195,6 +193,8 @@ FIREBASE_WEB_API_KEY=os.environ.get("FIREBASE_WEB_API_KEY")
 #link for enabling Cloud Firestore API  --> https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=django-fw
 #link for creating firebase datastore(database) --> https://console.cloud.google.com/datastore/setup?project=django-fw
 
+
+# Do this when u accidentally push ur secret key.
 
 # In the root of your project:
 # echo 'web/django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json' >> .gitignore
