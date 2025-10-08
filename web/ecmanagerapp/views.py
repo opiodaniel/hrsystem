@@ -10,6 +10,9 @@ import requests
 from django.conf import settings
 from django.contrib.auth import logout
 from .decorators import firebase_login_required, admin_required
+import datetime
+from datetime import timezone
+import pytz # Required for converting to local timezone
 
 def register_form(request):
     if request.method == "POST":
@@ -174,19 +177,50 @@ def admin_dashboard(request):
     }
     return render(request, "admin_dashboard.html", context)
 
+
 @firebase_login_required
 @admin_required
 def distributor_list(request):
-
+    """
+    Renders the distributor list page, fetching user data and their
+    last login time directly from Firebase Authentication.
+    """
     user = request.session.get("user")
 
-    # Example: fetch all Firebase users (can be cached later)
     distributors = []
+
+    # Define the local timezone object based on Django settings (e.g., Africa/Kampala)
+    local_tz = pytz.timezone(settings.TIME_ZONE)
+
+    # Iterate through all user records from Firebase Auth
     for user_record in auth.list_users().iterate_all():
+
+        # 1. Initialize last_login_time to "Never"
+        last_login_time = "Never"
+
+        # FIX: Access the last sign-in timestamp from user_metadata for ExportedUserRecord
+        last_sign_in_ms = user_record.user_metadata.last_sign_in_timestamp
+
+        # 2. Check if the user has ever signed in (timestamp is not None)
+        if last_sign_in_ms:
+            # Firebase timestamps are in milliseconds; convert to seconds
+            last_sign_in_seconds = last_sign_in_ms / 1000.0
+
+            # Convert UTC timestamp to a timezone-aware datetime object (UTC is standard)
+            utc_dt = datetime.datetime.fromtimestamp(last_sign_in_seconds, tz=timezone.utc)
+
+            # Convert the UTC datetime to the local timezone (e.g., Africa/Kampala)
+            local_dt = utc_dt.astimezone(local_tz)
+
+            # 3. Format the Python datetime object into the desired clean string,
+            # using %Z to show the local timezone abbreviation (e.g., EAT)
+            last_login_time = local_dt.strftime('%b %d, %Y %I:%M %p %Z')
+
         distributors.append({
             "uid": user_record.uid,
             "email": user_record.email,
-            "full_name": user_record.display_name
+            "full_name": user_record.display_name or user_record.email,  # Use email if display_name is not set
+            "last_login": last_login_time,  # Now includes the local last login time
         })
 
     context = {

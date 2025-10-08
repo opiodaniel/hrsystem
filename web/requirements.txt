@@ -50,6 +50,7 @@ pycparser==2.23
 PyJWT==2.10.1
 pyOpenSSL==25.2.0
 python-dotenv==1.1.1
+pytz==2025.2
 PyYAML==6.0.2
 redis==6.4.0
 requests==2.32.5
