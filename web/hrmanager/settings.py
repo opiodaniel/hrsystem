@@ -101,7 +101,7 @@ CHANNEL_LAYERS = {
 #     },
 # }
 
-# daphne -p 8000 djangofirebase.asgi:application
+# daphne -p 8000 hrmanager.asgi:application
 
 
 # Database
@@ -172,13 +172,13 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+print(BASE_DIR)
+
 # Firebase Configuration
 # Initialize the Firebase Admin SDK.
 # The `serviceAccountKey.json` file should be placed at the root of your project.
-# FIREBASE_CRED = credentials.Certificate(os.path.join(BASE_DIR, 'django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json'))
-# firebase_admin.initialize_app(FIREBASE_CRED)
-
-firebase_admin.initialize_app()
+FIREBASE_CRED = credentials.Certificate(os.path.join(BASE_DIR, 'django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json'))
+firebase_admin.initialize_app(FIREBASE_CRED)
 
 # Create a global reference to the Firestore client
 # This allows you to import `db` from settings in any part of your app.
@@ -200,7 +200,6 @@ FIREBASE_WEB_API_KEY=os.environ.get("FIREBASE_WEB_API_KEY")
 # echo 'web/django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json' >> .gitignore
 # git add .gitignore
 # git commit -m "Add service account key to gitignore"
-
 
 
 # git filter-repo --path-glob web/django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json --invert-paths --force
