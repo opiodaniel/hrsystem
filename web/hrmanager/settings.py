@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-fj*x+!5lrl3xlx*%cia7vs+vw*8q-4nstx9aw!5qz!pa*5malg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["spark-automative.onrender.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["hrsystem-r6sj.onrender.com", "127.0.0.1"]
 
 
 # Application definition
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'ecmanagerapp'
+    'ecmanagerapp',
 ]
 
 MIDDLEWARE = [
@@ -171,8 +171,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
 
 # Firebase Configuration
 # Initialize the Firebase Admin SDK.
