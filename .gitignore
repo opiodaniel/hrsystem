@@ -1,0 +1,4 @@
+# Ignore Firebase/Google Cloud service account keys
+django-firebase/web/django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json
+django-firebase/web/flashtech-8ac60-firebase-adminsdk-fbsvc-69798aca95.json
+django-firebase/web/.env.py
