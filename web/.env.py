@@ -1,2 +1,6 @@
 GOOGLE_APPLICATION_CREDENTIALS=django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json
 REDIS_URL=redis://red-d33lmaumcj7s73ag6fng:6379
+FIREBASE_WEB_API_KEY=AIzaSyB7gM-Gx47ULz61enKZAIwoWvlwir0oIQ4
+
+
+#export FIREBASE_WEB_API_KEY="AIzaSyB7gM-Gx47ULz61enKZAIwoWvlwir0oIQ4"

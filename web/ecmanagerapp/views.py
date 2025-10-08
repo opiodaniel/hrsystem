@@ -4,7 +4,6 @@ from django.contrib import messages
 from firebase_admin import auth
 from hrmanager.settings import db
 from firebase_admin import firestore
-import firebase_admin
 import requests
 from django.conf import settings
 from django.contrib.auth import logout

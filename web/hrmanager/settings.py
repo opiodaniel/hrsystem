@@ -175,8 +175,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Firebase Configuration
 # Initialize the Firebase Admin SDK.
 # The `serviceAccountKey.json` file should be placed at the root of your project.
-FIREBASE_CRED = credentials.Certificate(os.path.join(BASE_DIR, 'django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json'))
-firebase_admin.initialize_app(FIREBASE_CRED)
+# FIREBASE_CRED = credentials.Certificate(os.path.join(BASE_DIR, 'django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json'))
+# firebase_admin.initialize_app(FIREBASE_CRED)
+
+firebase_admin.initialize_app()
 
 # Create a global reference to the Firestore client
 # This allows you to import `db` from settings in any part of your app.
