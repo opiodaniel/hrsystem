@@ -1,288 +1,59 @@
-{% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Box icons -->
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <title>Login</title>
-      <style>
-          * {
-              margin: 0;
-              padding: 0;
-              -webkit-box-sizing: border-box;
-                      box-sizing: border-box;
-              font-family: "Inter", sans-serif;
-              color: #c9ced6;
-            }
-
-            body {
-              background: #0b101b;
-              min-height: 100vh;
-            }
-
-            .container {
-              margin: 0 auto;
-              max-width: 80vw;
-              padding: 1rem 0;
-            }
-            @media (max-width: 768px) {
-              .container {
-                max-width: 120vw;
-                padding: 0.1rem;
-              }
-            }
-
-            footer {
-              padding: 2rem 5rem;
-              display: -webkit-box;
-              display: -ms-flexbox;
-              display: flex;
-              gap: 1rem;
-              -webkit-box-pack: justify;
-                  -ms-flex-pack: justify;
-                      justify-content: space-between;
-              -webkit-box-align: center;
-                  -ms-flex-align: center;
-                      align-items: center;
-            }
-            @media (max-width: 768px) {
-              footer {
-                padding: 2rem 1rem;
-              }
-            }
-
-          header {
-                  display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  -webkit-box-align: center;
-                      -ms-flex-align: center;
-                          align-items: center;
-                  -webkit-box-pack: justify;
-                      -ms-flex-pack: justify;
-                          justify-content: space-between;
-                  padding: 1rem 3rem;
-                }
-                @media (max-width: 768px) {
-                  header {
-                    padding: 1rem;
-                  }
-                }
-                header .logo {
-                  font-size: 37px;
-                  font-weight: 600;
-                }
-                @media (max-width: 768px) {
-                  header .logo {
-                    font-size: 1.5rem;
-                  }
-                }
-                header .cta {
-                  display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  gap: 0.5rem;
-                }
-
-                .btn {
-                  padding: 1rem 3rem;
-                  border-radius: 48px;
-                  color: #c9ced6;
-                  display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  -webkit-box-align: center;
-                      -ms-flex-align: center;
-                          align-items: center;
-                  -webkit-box-pack: center;
-                      -ms-flex-pack: center;
-                          justify-content: center;
-                }
-                @media (max-width: 768px) {
-                  .btn {
-                    padding: 0.6rem 1.3rem;
-                  }
-                }
-
-                .btn-login {
-                  background-color: #353c4a;
-                }
-
-                .btn-register {
-                  background-color: #144ee3;
-                }
-
-              .pink-blue-gradient-text {
-                  background-image: radial-gradient(circle, #144ee3, #f35792);
-                  -webkit-background-clip: text;
-                  -webkit-text-fill-color: transparent;
-                }
-
-                .blue-pink-gradient-text {
-                  background-image: radial-gradient(circle, #f35792, #144ee3);
-                  -webkit-background-clip: text;
-                  -webkit-text-fill-color: transparent;
-                }
-
-                a {
-                  text-decoration: none;
-                }
-
-
-           .hero-section {
-              padding-top: 3rem;
-              display: -webkit-box;
-              display: -ms-flexbox;
-              display: flex;
-              -webkit-box-orient: vertical;
-              -webkit-box-direction: normal;
-                  -ms-flex-direction: column;
-                      flex-direction: column;
-              gap: 0.3rem;
-              -webkit-box-pack: center;
-                  -ms-flex-pack: center;
-                      justify-content: center;
-              -webkit-box-align: center;
-                  -ms-flex-align: center;
-                      align-items: center;
-            }
-            .hero-section .section-title {
-              font-size: 1.5rem;
-            }
-            @media (max-width: 768px) {
-              .hero-section .section-title {
-                font-size: 1.3rem;
-                margin-top:-3rem;
-              }
-            }
-
-            .dashboard {
-              width: 70%;
-            }
-            @media (max-width: 768px) {
-              .dashboard {
-                width: 100%;
-                overflow: scroll;
-              }
-            }
-
-          main {
-              background-image: url("{% static 'assets/Cubesbg.png' %}"), url("{% static 'assets/Swirlbg.png' %}");
-              min-height: 100vh;
-              background-size: cover;
-              background-position: center center;
-            }
-
-          form {
-                  background-color: #f9f9f9;
-                  padding: 20px;
-                  border-radius: 10px;
-                }
-
-        /* Add styles for the form input fields */
-        .form-control {
-          width: 90%;
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-        }
-
-        /* Add styles for the form labels */
-        label {
-          font-weight: bold;
-        }
-
-        /* Add styles for the submit button */
-        .btn-primary {
-          background-color: #007bff;
-          color: #fff;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-
-        .btn-primary:hover {
-          background-color: #0056b3;
-        }
-
-        /* Add styles for the "Show Password" checkbox */
-        .form-check-label {
-          cursor: pointer;
-        }
-
-        /* Add styles for the error message */
-        .error-message {
-          color: red;
-          margin-top: 10px;
-        }
-      </style>
-  </head>
-  <body>
-    <main>
-<!--      <header>-->
-<!--        <img src="{{ company_logo_url }}" style="border-radius: 60px;" width="100px" alt="logo">-->
-<!--      </header>-->
-      <div class="container">
-        <div class="hero-section">
-          <h2 class="section-title" style="text-align:center">
-            <span class="blue-pink-gradient-text">Century Properties</span>
-            <span class="pink-blue-gradient-text">&</span>
-            <span class="pink-blue-gradient-text">Real Estates Ltd</span>
-          </h2>
-<!--          <p class="section-desc">-->
-
-<!--          </p>-->
-          <div class="container-fluid">
-            <div class="row h-100 align-items-center justify-content-center">
-                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-                    <form method="post" action="{% url 'login_form' %}">
-                        {% csrf_token %}
-                        <div class="bg-secondary rounded p-4 p-sm-5 my-4 mx-3">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <img src="{{ company_logo_url }}" style="border-radius: 60px;" width="80px" alt="logo">
-                                <h3>Sign In</h3>
-                            </div>
-                            {% if messages %}
-                            <div>
-                              <strong style="color:red">Message:</strong>
-                              {% for message in messages %}
-                              <ul>
-                                <li>{{message}}</li>
-                              </ul>
-                               {% endfor %}
-                            </div>
-                        {% endif %}
-                            <div class="form-floating mb-1">
-                                <input type="text" class="form-control" id="floatingInput" name="email"  required>
-                                <label>Email</label>
-                            </div>
-                            <div class="form-floating mb-2">
-                                <input type="password" class="form-control" id="id_password" name="password"  required>
-                                <label for="id_password">Password</label>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="togglePassword">
-                                    <label class="form-check-label" for="togglePassword">Show Password</label>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign In</button>
-                        </div>
-                    </form>
-
-                </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <!-- component -->
+    <div class="container px-4 mx-auto">
+      <div class="max-w-lg mx-auto">
+        <div class="text-center mb-6 py-8">
+          <h2 class="text-3xl md:text-4xl font-extrabold">Sign in</h2>
+        </div>
+        {% if messages %}
+            <div class="text-center mb-6">
+              <strong style="color:red">Message:</strong>
+              {% for message in messages %}
+              <ul>
+                <li>{{message}}</li>
+              </ul>
+               {% endfor %}
             </div>
-        </div>
-        </div>
+        {% endif %}
+        <form method="post" action="{% url 'login_form' %}">
+          {% csrf_token %}
+          <div class="mb-6">
+            <label class="block mb-2 font-extrabold" for="">Email</label>
+            <input class="inline-block w-full p-4 leading-6 text-lg font-extrabold placeholder-indigo-900 bg-white shadow border-2 border-indigo-900 rounded" type="email" name="email" placeholder="email" required>
+          </div>
+          <div class="mb-6">
+            <label class="block mb-2 font-extrabold">Password</label>
+            <input class="inline-block w-full p-4 leading-6 text-lg font-extrabold placeholder-indigo-900 bg-white shadow border-2 border-indigo-900 rounded" type="password" id="id_password" name="password" placeholder="**********" required>
+          </div>
+          <div class="flex flex-wrap -mx-4 mb-6 items-center justify-between">
+            <div class="w-full lg:w-auto px-4 mb-4 lg:mb-0">
+              <label for="">
+                  <input type="checkbox" class="form-check-input" id="togglePassword">
+                  <span class="ml-1 font-extrabold" for="togglePassword">Show Password</span>
+                </label>
+            </div>
+            <div class="w-full lg:w-auto px-4"><a class="inline-block font-extrabold hover:underline" href="#">Forgot your
+                password?</a></div>
+          </div>
+          <button class="inline-block w-full py-4 px-6 mb-6 text-center text-lg leading-6 text-white font-extrabold bg-indigo-800 hover:bg-indigo-900 border-3 border-indigo-900 shadow rounded transition duration-200">Sign in</button>
+          <p class="text-center font-extrabold">Don&rsquo;t have an account? <a class="text-red-500 hover:underline"
+              href="#">Sign up</a></p>
+        </form>
       </div>
-    </main>
-    <script src="{% static 'js/app.js' %}"></script>
+    </div>
+
     <script>
         const togglePassword = document.querySelector("#togglePassword");
         const password =  document.getElementById("id_password");
@@ -302,6 +73,7 @@
         form.addEventListener('submit', function (e) {
             //e.preventDefault();
         });
-      </script>
-  </body>
+    </script>
+
+</body>
 </html>
