@@ -1,0 +1,117 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+     <style>
+        form i {
+            margin-left: 0px;
+            cursor: pointer;
+        }
+     </style>
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="container container-p-y">
+        <div class="overflow-auto row">
+            <div class="col-lg-8 col-xl-12 mb-1 order-0">
+                <div class="card mb-4">
+                    <h5 class="card-header">Distributor Register</h5>
+                     <div  style="display:flex;gap:10px;">
+                         {% if message %}
+                            <p style="color:red">{{ message }}</p>
+                         {% endif %}
+                     </div>
+                    <hr class="my-0"/>
+                    <div class="card-body">
+                        <form id="formAccountSettings" method="POST">
+                            {% csrf_token %}
+                            <div class="overflow-auto row">
+                                <div class="row">
+
+                                    <div class="col-md-6 col-xl-3 mb-3">
+                                        <label for="username" class="form-label">User Name</label>
+                                        {{ form.username }}
+                                        <input type="text" name="username" class="form-control" placeholder="opio" autofocus="" required="" id="id_username">
+                                    </div>
+
+                                     <div class="col-md-6 col-xl-3 mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control" placeholder="op@gmail.com" maxlength="320" required="" id="id_email">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 col-xl-3 mb-3">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" name="first_name" class="form-control" placeholder="opio" required="" id="id_first_name">
+                                    </div>
+                                    <div class="col-md-6 col-xl-3 mb-3">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" name="last_name" class="form-control" placeholder="daniel" required="" id="id_last_name">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 col-xl-3 mb-3">
+                                        <label for="lastName" class="form-label">Password</label>
+                                            <input type="password" name="password1" class="form-control" placeholder="password1" required="" id="id_password1">
+                                           <i class="bi bi-eye-slash" id="togglePassword1"></i>
+                                           <label for="togglePassword1" style="color:red">Show Password</label>
+                                    </div>
+                                    <div class="col-md-6 col-xl-3 mb-3">
+                                        <label for="lastName" class="form-label">Confirm Password</label>
+                                        <input type="password" name="password2" class="form-control" placeholder="password2" required="" id="id_password2">
+                                       <i class="bi bi-eye-slash" id="togglePassword2"></i>
+                                        <label for="togglePassword2" style="color:red">Show Password</label>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="mt-2">
+                                <button  type="submit" class="btn btn-danger me-2">Register</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script>
+        const togglePassword1 = document.querySelector("#togglePassword1");
+        const password1 =  document.getElementById("id_password1");
+        togglePassword1.addEventListener("click", function () {
+            // toggle the type attribute
+            const type = password1.getAttribute("type") === "password" ? "text" : "password";
+            password1.setAttribute("type", type);
+            // toggle the icon
+            this.classList.toggle("bi-eye");
+        });
+
+        const togglePassword2 = document.querySelector("#togglePassword2");
+        const password2 =  document.getElementById("id_password2");
+        togglePassword2.addEventListener("click", function () {
+            // toggle the type attribute
+            const type = password2.getAttribute("type") === "password" ? "text" : "password";
+            password2.setAttribute("type", type);
+            // toggle the icon
+            this.classList.toggle("bi-eye");
+        });
+
+        // prevent form submit
+        const form = document.querySelector("form");
+        form.addEventListener('submit', function (e) {
+            //e.preventDefault();
+        });
+    </script>
+</body>
+</html>

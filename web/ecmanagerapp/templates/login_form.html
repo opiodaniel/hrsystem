@@ -1,0 +1,307 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Box icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <title>Login</title>
+      <style>
+          * {
+              margin: 0;
+              padding: 0;
+              -webkit-box-sizing: border-box;
+                      box-sizing: border-box;
+              font-family: "Inter", sans-serif;
+              color: #c9ced6;
+            }
+
+            body {
+              background: #0b101b;
+              min-height: 100vh;
+            }
+
+            .container {
+              margin: 0 auto;
+              max-width: 80vw;
+              padding: 1rem 0;
+            }
+            @media (max-width: 768px) {
+              .container {
+                max-width: 120vw;
+                padding: 0.1rem;
+              }
+            }
+
+            footer {
+              padding: 2rem 5rem;
+              display: -webkit-box;
+              display: -ms-flexbox;
+              display: flex;
+              gap: 1rem;
+              -webkit-box-pack: justify;
+                  -ms-flex-pack: justify;
+                      justify-content: space-between;
+              -webkit-box-align: center;
+                  -ms-flex-align: center;
+                      align-items: center;
+            }
+            @media (max-width: 768px) {
+              footer {
+                padding: 2rem 1rem;
+              }
+            }
+
+          header {
+                  display: -webkit-box;
+                  display: -ms-flexbox;
+                  display: flex;
+                  -webkit-box-align: center;
+                      -ms-flex-align: center;
+                          align-items: center;
+                  -webkit-box-pack: justify;
+                      -ms-flex-pack: justify;
+                          justify-content: space-between;
+                  padding: 1rem 3rem;
+                }
+                @media (max-width: 768px) {
+                  header {
+                    padding: 1rem;
+                  }
+                }
+                header .logo {
+                  font-size: 37px;
+                  font-weight: 600;
+                }
+                @media (max-width: 768px) {
+                  header .logo {
+                    font-size: 1.5rem;
+                  }
+                }
+                header .cta {
+                  display: -webkit-box;
+                  display: -ms-flexbox;
+                  display: flex;
+                  gap: 0.5rem;
+                }
+
+                .btn {
+                  padding: 1rem 3rem;
+                  border-radius: 48px;
+                  color: #c9ced6;
+                  display: -webkit-box;
+                  display: -ms-flexbox;
+                  display: flex;
+                  -webkit-box-align: center;
+                      -ms-flex-align: center;
+                          align-items: center;
+                  -webkit-box-pack: center;
+                      -ms-flex-pack: center;
+                          justify-content: center;
+                }
+                @media (max-width: 768px) {
+                  .btn {
+                    padding: 0.6rem 1.3rem;
+                  }
+                }
+
+                .btn-login {
+                  background-color: #353c4a;
+                }
+
+                .btn-register {
+                  background-color: #144ee3;
+                }
+
+              .pink-blue-gradient-text {
+                  background-image: radial-gradient(circle, #144ee3, #f35792);
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                }
+
+                .blue-pink-gradient-text {
+                  background-image: radial-gradient(circle, #f35792, #144ee3);
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                }
+
+                a {
+                  text-decoration: none;
+                }
+
+
+           .hero-section {
+              padding-top: 3rem;
+              display: -webkit-box;
+              display: -ms-flexbox;
+              display: flex;
+              -webkit-box-orient: vertical;
+              -webkit-box-direction: normal;
+                  -ms-flex-direction: column;
+                      flex-direction: column;
+              gap: 0.3rem;
+              -webkit-box-pack: center;
+                  -ms-flex-pack: center;
+                      justify-content: center;
+              -webkit-box-align: center;
+                  -ms-flex-align: center;
+                      align-items: center;
+            }
+            .hero-section .section-title {
+              font-size: 1.5rem;
+            }
+            @media (max-width: 768px) {
+              .hero-section .section-title {
+                font-size: 1.3rem;
+                margin-top:-3rem;
+              }
+            }
+
+            .dashboard {
+              width: 70%;
+            }
+            @media (max-width: 768px) {
+              .dashboard {
+                width: 100%;
+                overflow: scroll;
+              }
+            }
+
+          main {
+              background-image: url("{% static 'assets/Cubesbg.png' %}"), url("{% static 'assets/Swirlbg.png' %}");
+              min-height: 100vh;
+              background-size: cover;
+              background-position: center center;
+            }
+
+          form {
+                  background-color: #f9f9f9;
+                  padding: 20px;
+                  border-radius: 10px;
+                }
+
+        /* Add styles for the form input fields */
+        .form-control {
+          width: 90%;
+          padding: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+
+        /* Add styles for the form labels */
+        label {
+          font-weight: bold;
+        }
+
+        /* Add styles for the submit button */
+        .btn-primary {
+          background-color: #007bff;
+          color: #fff;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        .btn-primary:hover {
+          background-color: #0056b3;
+        }
+
+        /* Add styles for the "Show Password" checkbox */
+        .form-check-label {
+          cursor: pointer;
+        }
+
+        /* Add styles for the error message */
+        .error-message {
+          color: red;
+          margin-top: 10px;
+        }
+      </style>
+  </head>
+  <body>
+    <main>
+<!--      <header>-->
+<!--        <img src="{{ company_logo_url }}" style="border-radius: 60px;" width="100px" alt="logo">-->
+<!--      </header>-->
+      <div class="container">
+        <div class="hero-section">
+          <h2 class="section-title" style="text-align:center">
+            <span class="blue-pink-gradient-text">Century Properties</span>
+            <span class="pink-blue-gradient-text">&</span>
+            <span class="pink-blue-gradient-text">Real Estates Ltd</span>
+          </h2>
+<!--          <p class="section-desc">-->
+
+<!--          </p>-->
+          <div class="container-fluid">
+            <div class="row h-100 align-items-center justify-content-center">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                    <form method="post" action="{% url 'login_form' %}">
+                        {% csrf_token %}
+                        <div class="bg-secondary rounded p-4 p-sm-5 my-4 mx-3">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <img src="{{ company_logo_url }}" style="border-radius: 60px;" width="80px" alt="logo">
+                                <h3>Sign In</h3>
+                            </div>
+                            {% if messages %}
+                            <div>
+                              <strong style="color:red">Message:</strong>
+                              {% for message in messages %}
+                              <ul>
+                                <li>{{message}}</li>
+                              </ul>
+                               {% endfor %}
+                            </div>
+                        {% endif %}
+                            <div class="form-floating mb-1">
+                                <input type="text" class="form-control" id="floatingInput" name="email"  required>
+                                <label>Email</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="password" class="form-control" id="id_password" name="password"  required>
+                                <label for="id_password">Password</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="togglePassword">
+                                    <label class="form-check-label" for="togglePassword">Show Password</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign In</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        </div>
+      </div>
+    </main>
+    <script src="{% static 'js/app.js' %}"></script>
+    <script>
+        const togglePassword = document.querySelector("#togglePassword");
+        const password =  document.getElementById("id_password");
+
+        togglePassword.addEventListener("click", function () {
+            // toggle the type attribute
+
+            const type = password.getAttribute("type") === "password" ? "text" : "password";
+            password.setAttribute("type", type);
+
+            // toggle the icon
+            this.classList.toggle("form-check-input");
+        });
+
+        // prevent form submit
+        const form = document.querySelector("form");
+        form.addEventListener('submit', function (e) {
+            //e.preventDefault();
+        });
+      </script>
+  </body>
+</html>
