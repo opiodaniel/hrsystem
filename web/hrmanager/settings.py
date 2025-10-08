@@ -196,3 +196,11 @@ FIREBASE_WEB_API_KEY=os.environ.get("FIREBASE_WEB_API_KEY")
 #link for creating firebase datastore(database) --> https://console.cloud.google.com/datastore/setup?project=django-fw
 
 
+# In the root of your project:
+# echo 'web/django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json' >> .gitignore
+# git add .gitignore
+# git commit -m "Add service account key to gitignore"
+
+
+
+# git filter-repo --path-glob web/django-fw-firebase-adminsdk-fbsvc-e75ca1d06d.json --invert-paths --force
