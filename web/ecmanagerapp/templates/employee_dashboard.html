@@ -1,255 +1,371 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Box icons -->
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <title>Login</title>
-      <style>
-          * {
-              margin: 0;
-              padding: 0;
-              -webkit-box-sizing: border-box;
-                      box-sizing: border-box;
-              font-family: "Inter", sans-serif;
-              color: #c9ced6;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Client Entry Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jQuery for AJAX and DOM manipulation -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        main::-webkit-scrollbar { width: 8px; }
+        main::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        .active-nav-link { background-color: #4338ca; font-weight: 600; }
+        .active-nav-link:hover { background-color: #4338ca; }
+    </style>
+</head>
+<body class="bg-gray-100 flex h-screen font-sans">
 
-            body {
-              background: #0b101b;
-              min-height: 100vh;
-            }
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3">
+        <!-- Toasts will be injected here -->
+    </div>
 
-            .container {
-              margin: 0 auto;
-              max-width: 80vw;
-              padding: 1rem 0;
-            }
-            @media (max-width: 768px) {
-              .container {
-                max-width: 120vw;
-                padding: 0.1rem;
-              }
-            }
+    <!-- 1. Left Sidebar (Employee Navigation) -->
+    <aside id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 flex-col
+                          fixed inset-y-0 left-0 transform -translate-x-full
+                          md:relative md:translate-x-0 transition duration-300 ease-in-out z-20 shadow-xl">
 
-            footer {
-              padding: 2rem 5rem;
-              display: -webkit-box;
-              display: -ms-flexbox;
-              display: flex;
-              gap: 1rem;
-              -webkit-box-pack: justify;
-                  -ms-flex-pack: justify;
-                      justify-content: space-between;
-              -webkit-box-align: center;
-                  -ms-flex-align: center;
-                      align-items: center;
-            }
-            @media (max-width: 768px) {
-              footer {
-                padding: 2rem 1rem;
-              }
-            }
+        <div class="p-6 text-2xl font-bold text-green-400 border-b border-gray-700">
+            Distributor Portal
+        </div>
+        <nav class="flex-1 p-4 space-y-1">
 
-          header {
-                  display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  -webkit-box-align: center;
-                      -ms-flex-align: center;
-                          align-items: center;
-                  -webkit-box-pack: justify;
-                      -ms-flex-pack: justify;
-                          justify-content: space-between;
-                  padding: 1rem 3rem;
-                }
-                @media (max-width: 768px) {
-                  header {
-                    padding: 1rem;
-                  }
-                }
-                header .logo {
-                  font-size: 37px;
-                  font-weight: 600;
-                }
-                @media (max-width: 768px) {
-                  header .logo {
-                    font-size: 1.5rem;
-                  }
-                }
-                header .cta {
-                  display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  gap: 0.5rem;
-                }
+            <!-- Link 1: My Hub (Active) -->
+            <a href="#" class="nav-link active-nav-link flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-green-600 transition duration-150">
+                <!-- SVG Icon: Dashboard/Hub -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                <span>My Client Hub</span>
+            </a>
 
-                .btn {
-                  padding: 1rem 3rem;
-                  border-radius: 48px;
-                  color: #c9ced6;
-                  display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  -webkit-box-align: center;
-                      -ms-flex-align: center;
-                          align-items: center;
-                  -webkit-box-pack: center;
-                      -ms-flex-pack: center;
-                          justify-content: center;
-                }
-                @media (max-width: 768px) {
-                  .btn {
-                    padding: 0.6rem 1.3rem;
-                  }
-                }
+            <!-- Link 2: My Performance -->
+            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-green-600 transition duration-150">
+                <!-- SVG Icon: Performance/Leaderboard -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                <span>Leaderboard</span>
+            </a>
 
-                .btn-login {
-                  background-color: #353c4a;
-                }
+        </nav>
 
-                .btn-register {
-                  background-color: #144ee3;
-                }
+        <!-- Mobile close button -->
+        <button onclick="toggleSidebar()" class="absolute top-2 right-2 text-white md:hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </aside>
 
-              .pink-blue-gradient-text {
-                  background-image: radial-gradient(circle, #144ee3, #f35792);
-                  -webkit-background-clip: text;
-                  -webkit-text-fill-color: transparent;
-                }
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col overflow-hidden">
 
-                .blue-pink-gradient-text {
-                  background-image: radial-gradient(circle, #f35792, #144ee3);
-                  -webkit-background-clip: text;
-                  -webkit-text-fill-color: transparent;
-                }
+        <!-- 2. Header / Top Bar -->
+        <header class="bg-white shadow p-4 flex justify-between items-center z-10">
+            <div class="flex items-center">
+                <!-- Hamburger Menu Button -->
+                <button onclick="toggleSidebar()" class="text-gray-600 md:hidden mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Hello, Jane Smith!</h1>
+            </div>
 
-                a {
-                  text-decoration: none;
-                }
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-600 hidden sm:block">Role: Sales Representative</span>
+                <button class="text-sm text-gray-500 hover:text-gray-800 transition">Logout</button>
+            </div>
+        </header>
 
+        <!-- 3. Employee Content (Metrics, Form, List) -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 space-y-6">
 
-           .hero-section {
-              padding-top: 3rem;
-              display: -webkit-box;
-              display: -ms-flexbox;
-              display: flex;
-              -webkit-box-orient: vertical;
-              -webkit-box-direction: normal;
-                  -ms-flex-direction: column;
-                      flex-direction: column;
-              gap: 0.3rem;
-              -webkit-box-pack: center;
-                  -ms-flex-pack: center;
-                      justify-content: center;
-              -webkit-box-align: center;
-                  -ms-flex-align: center;
-                      align-items: center;
-            }
-            .hero-section .section-title {
-              font-size: 1.5rem;
-            }
-            @media (max-width: 768px) {
-              .hero-section .section-title {
-                font-size: 1.3rem;
-                margin-top:-3rem;
-              }
-            }
+            <!-- Personal KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-            .dashboard {
-              width: 70%;
-            }
-            @media (max-width: 768px) {
-              .dashboard {
-                width: 100%;
-                overflow: scroll;
-              }
-            }
+                <!-- KPI Card 1: Clients Logged This Month -->
+                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-green-500">
+                    <p class="text-sm font-medium text-gray-500">Clients Logged This Month</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">45</p>
+                </div>
 
-          main {
-              background-image: url("{% static 'assets/Cubesbg.png' %}"), url("{% static 'assets/Swirlbg.png' %}");
-              min-height: 100vh;
-              background-size: cover;
-              background-position: center center;
-            }
+                <!-- KPI Card 2: Pending Follow-ups -->
+                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-yellow-500">
+                    <p class="text-sm font-medium text-gray-500">Pending Follow-ups</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">12</p>
+                </div>
 
-          form {
-                  background-color: #f9f9f9;
-                  padding: 20px;
-                  border-radius: 10px;
-                }
+                <!-- KPI Card 3: Total Clients (All Time) -->
+                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-indigo-500">
+                    <p class="text-sm font-medium text-gray-500">Total Clients (All Time)</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">158</p>
+                </div>
 
-        /* Add styles for the form input fields */
-        .form-control {
-          width: 90%;
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-        }
-
-        /* Add styles for the form labels */
-        label {
-          font-weight: bold;
-        }
-
-        /* Add styles for the submit button */
-        .btn-primary {
-          background-color: #007bff;
-          color: #fff;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-
-        .btn-primary:hover {
-          background-color: #0056b3;
-        }
-
-        /* Add styles for the "Show Password" checkbox */
-        .form-check-label {
-          cursor: pointer;
-        }
-
-        /* Add styles for the error message */
-        .error-message {
-          color: red;
-          margin-top: 10px;
-        }
-      </style>
-  </head>
-  <body>
-    <main>
-<!--      <header>-->
-<!--        <img src="{{ company_logo_url }}" style="border-radius: 60px;" width="100px" alt="logo">-->
-<!--      </header>-->
-      <div class="container">
-        <div class="hero-section">
-          <h2 class="section-title" style="text-align:center">
-            <span class="blue-pink-gradient-text">Century Properties</span>
-            <span class="pink-blue-gradient-text">&</span>
-            <span class="pink-blue-gradient-text">Real Estates Ltd</span>
-          </h2>
-<!--          <p class="section-desc">-->
-
-<!--          </p>-->
-          <div class="container-fluid">
-            <div class="row h-100 align-items-center justify-content-center">
-                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-
-                   <h1>My Dashboard</h1>
-                    <p>{{ user }}</p>
-
+                <!-- KPI Card 4: Last Activity -->
+                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-gray-400">
+                    <p class="text-sm font-medium text-gray-500">Last Client Logged</p>
+                    <p class="text-xl font-bold text-gray-900 mt-2">2 hours ago</p>
                 </div>
             </div>
-        </div>
-        </div>
-      </div>
-    </main>
-  </body>
+
+            <!-- Main Content: Client Submission Form & List -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Left Column: New Client Entry Form (Primary Focus) -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-xl shadow-2xl sticky top-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Log New Client Lead</h2>
+                        <form id="new-client-form" class="space-y-4">
+
+                            <!-- Client Full Name -->
+                            <div>
+                                <label for="client_name" class="block text-sm font-medium text-gray-700 mb-1">Client Full Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="client_name" name="client_name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="John Doe">
+                            </div>
+
+                            <!-- Contact 1 -->
+                            <div>
+                                <label for="contact_1" class="block text-sm font-medium text-gray-700 mb-1">Contact 1 (Primary) <span class="text-red-500">*</span></label>
+                                <input type="text" id="contact_1" name="contact_1" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="e.g., +1 555 123 4567 or email@example.com">
+                            </div>
+
+                            <!-- Contact 2 -->
+                            <div>
+                                <label for="contact_2" class="block text-sm font-medium text-gray-700 mb-1">Contact 2 (Optional)</label>
+                                <input type="text" id="contact_2" name="contact_2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="Alternative Phone or Email">
+                            </div>
+
+                            <!-- Initial Notes -->
+                            <div>
+                                <label for="initial_notes" class="block text-sm font-medium text-gray-700 mb-1">Initial Notes</label>
+                                <textarea id="initial_notes" name="initial_notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="Key points from the conversation, status, etc."></textarea>
+                            </div>
+
+                            <button type="submit" id="client-submit-btn" class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition duration-150 shadow-md flex items-center justify-center space-x-2">
+                                <!-- SVG Icon: Checkmark/Submit -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                                <span>Submit New Client</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: My Clients List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">My Clients (158 Total)</h2>
+
+                        <!-- Search and Filter (Simplified) -->
+                        <div class="mb-4 flex space-x-3">
+                            <input type="text" placeholder="Filter by client name..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
+                            <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Search</button>
+                        </div>
+
+                        <!-- Client List Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact 1</th>
+                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <!-- Client Data (DUMMY) -->
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Acme Corporation</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">909-555-1212</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                Pending
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Globex Holdings</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">john@globex.com</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Approved
+                                            </span>
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Stark Industries</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">212-555-4444</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Rejected
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Reusable Modal (if needed for follow-up actions like 'View Client Details') -->
+    <div id="detail-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-40 p-4">
+        <!-- Modal content goes here -->
+    </div>
+
+    <script>
+        // --- Modal Control Functions (Simplified for this file) ---
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'success') {
+            const container = $('#toast-container');
+            const toast = $(`
+                <div class="p-4 rounded-lg shadow-xl text-white flex items-center space-x-3 transition-opacity duration-300 opacity-0 transform translate-y-2"
+                     style="min-width: 250px;"
+                     data-type="${type}">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' : ''}
+                        ${type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' : ''}
+                    </svg>
+                    <span class="text-sm font-medium">${message}</span>
+                </div>
+            `);
+
+            if (type === 'success') {
+                toast.addClass('bg-green-500');
+            } else if (type === 'error') {
+                toast.addClass('bg-red-500');
+            }
+
+            container.append(toast);
+
+            // Animate in
+            setTimeout(() => toast.css({ 'opacity': '1', 'transform': 'translateY(0)' }), 10);
+
+            // Animate out and remove
+            setTimeout(() => {
+                toast.css({ 'opacity': '0', 'transform': 'translateY(-10px)' });
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // --- Sidebar Toggle ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        var csrftoken = Cookies.get('csrftoken');
+
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+            }
+        });
+        $(document).ready(function() {
+
+            // Conceptual URL for the server-side view (assuming Django/Flask route)
+            const SUBMIT_URL = '/api/submit_client_lead/';
+
+            // --- 1. Client Submission Form Handling (AJAX) ---
+            $('#new-client-form').on('submit', function(e) {
+                e.preventDefault();
+
+                const form = $(this);
+                const submitBtn = $('#client-submit-btn');
+                const originalText = submitBtn.html();
+
+                // 1. Collect and Validate Data
+                const clientName = $('#client_name').val().trim();
+                const contact1 = $('#contact_1').val().trim();
+                const contact2 = $('#contact_2').val().trim();
+                const initialNotes = $('#initial_notes').val().trim();
+
+                if (clientName.length < 3) {
+                     showToast("Client Full Name must be at least 3 characters.", 'error');
+                     return;
+                }
+                if (contact1.length < 5) { // Basic length check for phone or email
+                     showToast("Primary contact is required.", 'error');
+                     return;
+                }
+
+                // 2. Prepare JSON Payload (Matches expected structure in views.py)
+                const payload = {
+                    fullName: clientName,
+                    contact1: contact1,
+                    contact2: contact2 || null, // Send null if contact2 is empty
+                    initialNotes: initialNotes
+                };
+
+                // 3. Update UI for Submission
+                submitBtn.html('<svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Submitting...');
+                submitBtn.prop('disabled', true);
+
+                // 4. AJAX Call to Server
+                $.ajax({
+                    url: SUBMIT_URL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    success: function(response) {
+                        // Assuming response is { message: "...", id: "..." }
+                        showToast(`Client ${clientName} logged successfully! ID: ${response.id}`, 'success');
+                        form.trigger('reset'); // Clear the form on success
+                        // In a real app, you would dynamically update the client list here.
+                    },
+                    error: function(xhr, status, error) {
+                        let errorMessage = "An unknown error occurred.";
+                        try {
+                            const errorJson = JSON.parse(xhr.responseText);
+                            errorMessage = errorJson.error || errorJson.message || errorMessage;
+                        } catch (e) {
+                            // If response is not JSON, use the HTTP status/message
+                            errorMessage = `Error ${xhr.status}: ${error}`;
+                        }
+
+                        showToast(`Submission failed: ${errorMessage}`, 'error');
+                    },
+                    complete: function() {
+                        // Reset button state regardless of success or failure
+                        submitBtn.html(originalText);
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+
+            // --- 2. Navigation Link Active State Handler ---
+            $('.nav-link').on('click', function(e) {
+                $('.nav-link').removeClass('active-nav-link');
+                $(this).addClass('active-nav-link');
+
+                if (window.innerWidth < 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
+
+</body>
 </html>

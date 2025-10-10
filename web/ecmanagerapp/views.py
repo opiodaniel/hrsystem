@@ -1,5 +1,7 @@
+import json
+
 import firebase_admin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.decorators.http import require_POST
@@ -16,6 +18,7 @@ import pytz # Required for converting to local timezone
 
 def register_form(request):
     if request.method == "POST":
+        # Assume data comes from request.POST for form submission (not JSON)
         email = request.POST.get("email")
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
@@ -25,13 +28,18 @@ def register_form(request):
             return JsonResponse({"status": "error", "message": "Passwords do not match."}, status=400)
 
         try:
+            # Assume 'auth' is the initialized Firebase Auth client
             user = auth.create_user(
                 email=email,
                 password=password1,
                 display_name=full_name
             )
-            # Store additional info in Firestore
-            db.collection('distributors').document(user.uid).set({
+            # Store additional info in Firestore using the correct Public Data Path
+            # Public data (for sharing with other users or collaborative apps):
+            # Collection path: MUST store in /artifacts/{appId}/public/data/distributors
+            distributors_ref = db.collection(f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/distributors')
+
+            distributors_ref.document(user.uid).set({
                 'full_name': full_name,
                 'email': email,
                 'role': 'employee',
@@ -39,9 +47,11 @@ def register_form(request):
             })
             return JsonResponse({"status": "success", "message": "Employee registered successfully!"})
         except Exception as e:
+            # Catch specific Firebase Auth exceptions here in a real app
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
     return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
+
 
 
 def login_form(request):
@@ -65,7 +75,7 @@ def login_form(request):
             uid = decoded_token["uid"]
 
             # Fetch role from Firestore
-            doc_ref = db.collection("distributors").document(uid).get()
+            doc_ref = db.collection(f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/distributors').document(uid).get()
 
             if doc_ref.exists:
                 user_data = doc_ref.to_dict()
@@ -120,8 +130,8 @@ def delete_employee(request):
 
         # --- Step 2: Delete associated document from Firestore ---
         # The document is stored in the 'distributors' collection, keyed by the UID.
-        db = firestore.client()  # Get a fresh DB client instance
-        distributor_ref = db.collection('distributors').document(employee_uid)
+        distributor_ref = db.collection(f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/distributors').document(
+            employee_uid)
 
         # Check if the document exists before attempting deletion (optional but robust)
         if distributor_ref.get().exists:
@@ -229,3 +239,116 @@ def distributor_list(request):
         "total_employees": len(distributors),
     }
     return render(request, "distributor_list.html", context)
+
+
+def check_for_duplicate_contact(contact):
+    """
+    CONCEPTUAL: Checks if a contact (email or phone) already exists in any client lead.
+
+    This simulates the complex, multi-field, server-side check required
+    to ensure uniqueness across the entire public 'clients' collection.
+
+    Note: Firestore requires separate queries for each field check.
+    """
+    clients_ref = db.collection(f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/clients')
+
+    # Check if contact is already in 'contact1' field
+    # We query the normalized field in the database
+    query1 = clients_ref.where('contact1', '==', contact).limit(1).get()
+    if len(query1) > 0:
+        return True
+
+    # Check if contact is already in 'contact2' field
+    query2 = clients_ref.where('contact2', '==', contact).limit(1).get()
+    if len(query2) > 0:
+        return True
+
+    return False
+
+
+# --- Client Submission Logic (Updated) ---
+def submit_client_lead(request):
+    """
+    Django view to receive and save a new client lead to Firestore.
+    Ensures the client is correctly associated with the authenticated employee.
+    """
+    # 1. Server-side Request and Authentication Check
+    if request.method != 'POST':
+        return HttpResponseBadRequest(json.dumps({'error': 'Only POST method allowed'}), status=405)
+
+    # Assuming user authentication has been handled and 'request.user' is available
+    user = request.session.get("user")
+
+    if not user or 'uid' not in user:
+        # The user must be logged in to submit a lead
+        return JsonResponse({"error": "Authentication required. Employee not found in session."}, status=401)
+
+    employee_uid = user['uid']
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest(json.dumps({'error': 'Invalid JSON format'}), status=400)
+
+    # Extract and clean data
+    full_name = data.get('fullName', '').strip()
+    initial_notes = data.get('initialNotes', '').strip()
+
+    # --- FIX: Safely normalize contact_1 (Required) ---
+    contact_1_raw = data.get('contact1')
+    contact_1 = str(contact_1_raw).strip().lower() if contact_1_raw else None
+
+    # --- FIX: Safely normalize contact_2 (Optional) ---
+    contact_2_raw = data.get('contact2')
+    contact_2 = str(contact_2_raw).strip().lower() if contact_2_raw else None
+
+    # 2. Basic Server-side Data Validation
+    if not full_name or len(full_name) < 3:
+        return HttpResponseBadRequest(json.dumps({'error': 'Full name required.'}), status=400)
+
+    if not contact_1 or len(contact_1) < 5:
+        return HttpResponseBadRequest(json.dumps({'error': 'Primary contact required and must be valid.'}), status=400)
+
+    if contact_2 and contact_1 == contact_2:
+        return HttpResponseBadRequest(json.dumps({'error': 'Contacts cannot be identical.'}), status=400)
+
+    # If the optional contact_2 was just an empty string and became None, we treat it as valid.
+    if contact_2 == "":
+        contact_2 = None
+
+    # 3. CRITICAL: Contact Uniqueness Check
+    # Check contact 1
+    if check_for_duplicate_contact(contact_1):
+        return HttpResponseBadRequest(
+            json.dumps({'error': 'Primary contact already registered with another client.'}), status=409)
+
+    # Check contact 2 (only if provided)
+    if contact_2 and check_for_duplicate_contact(contact_2):
+        return HttpResponseBadRequest(
+            json.dumps({'error': 'Secondary contact already registered with another client.'}), status=409)
+
+    # 4. Save to Database (FIRESTORE)
+    try:
+        # Path: /artifacts/{APP_ID}/public/data/clients
+        clients_ref = db.collection(f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/clients')
+
+        client_data = {
+            'ownerId': employee_uid,  # Enforces client-to-employee ownership
+            'fullName': full_name,
+            'contact1': contact_1,  # Normalized contact
+            'contact2': contact_2,  # Normalized contact (None if not provided)
+            'initialNotes': initial_notes,
+            'dateLogged': firestore.SERVER_TIMESTAMP  # Uses server time for reliable logging
+        }
+
+        # Save the new document
+        update_time, doc_ref = clients_ref.add(client_data)
+
+        # Returns success response with the new document ID
+        return JsonResponse({'message': 'Client lead saved successfully', 'id': doc_ref.id}, status=201)
+
+    except Exception as e:
+        # Log error details here
+        print(f"Firestore Save Error: {e}")
+        return JsonResponse({'error': 'Database save failed.'}, status=500)
+

@@ -12,5 +12,6 @@ urlpatterns = [
     path("admins/dashboard/", views.admin_dashboard, name="admin_dashboard"),
 
     path("employee/dashboard/", views.employee_dashboard, name="employee_dashboard"),
-    path("employee/dashboard/distributors", views.distributor_list, name="distributor_list"),
+    path("admins/dashboard/distributors", views.distributor_list, name="distributor_list"),
+    path("api/submit_client_lead/", views.submit_client_lead, name="submit_client_lead"),
 ]

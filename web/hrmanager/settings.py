@@ -190,6 +190,7 @@ db = firestore.client()
 # Scroll down to the Your apps section (choose your Web app).
 
 FIREBASE_WEB_API_KEY=os.environ.get("FIREBASE_WEB_API_KEY")
+FIREBASE_WEB_APP_ID=os.environ.get("FIREBASE_WEB_APP_ID")
 
 
 #link for enabling Cloud Firestore API  --> https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=django-fw
