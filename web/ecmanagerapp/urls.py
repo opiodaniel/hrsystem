@@ -14,4 +14,6 @@ urlpatterns = [
     path("employee/dashboard/", views.employee_dashboard, name="employee_dashboard"),
     path("admins/dashboard/distributors", views.distributor_list, name="distributor_list"),
     path("api/submit_client_lead/", views.submit_client_lead, name="submit_client_lead"),
+
+    path('admins/clients/', views.admin_client_list, name='admin_client_list'),
 ]

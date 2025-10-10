@@ -352,3 +352,93 @@ def submit_client_lead(request):
         print(f"Firestore Save Error: {e}")
         return JsonResponse({'error': 'Database save failed.'}, status=500)
 
+
+def admin_client_list(request):
+    """
+    Renders the Admin Client List page by fetching, joining, and processing
+    all necessary data and KPIs on the server-side.
+    """
+
+    try:
+        # Define Firestore paths using the secured app ID structure
+        CLIENTS_PATH = f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/clients'
+        DISTRIBUTORS_PATH = f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/distributors'
+
+        # 1. Fetch Distributors (UID -> Name Map for Joining)
+        distributor_map = {}
+        distributors_snapshot = db.collection(DISTRIBUTORS_PATH).get()
+        for doc in distributors_snapshot:
+            data = doc.to_dict()
+            distributor_map[doc.id] = data.get('full_name', 'N/A')
+
+        # 2. Fetch All Clients and Initialize KPI Counters
+        clients_snapshot = db.collection(CLIENTS_PATH).get()
+        clients_data = []
+
+        # Use datetime.now(timezone.utc) to create a timezone-aware object
+        now = datetime.datetime.now(timezone.utc)
+        current_month_clients_count = 0
+        monthly_counts = {}
+
+        for doc in clients_snapshot:
+            client = doc.to_dict()
+            client['id'] = doc.id
+
+            owner_id = client.get('ownerId', 'Unknown')
+
+            # Data Join: Link the client to the distributor's name
+            client['distributor_name'] = distributor_map.get(owner_id, owner_id)
+
+            # Date Handling and Formatting
+            log_timestamp = client.get('dateLogged')
+            if log_timestamp:
+                # FIX: Assuming the DatetimeWithNanoseconds object is already a naive Python
+                # datetime, we set the timezone directly using .replace(), which should be safe.
+                log_date = log_timestamp.replace(tzinfo=timezone.utc)
+            else:
+                # If no timestamp, use the current time (UTC)
+                log_date = now
+
+            # Format the date for easy display in the Django template
+            client['date_logged_formatted'] = log_date.strftime('%b %d, %Y %I:%M %p')
+
+            # 3. KPI Calculation (Monthly Counts and Leaderboard Tally)
+            if log_date.month == now.month and log_date.year == now.year:
+                current_month_clients_count += 1
+                monthly_counts[owner_id] = monthly_counts.get(owner_id, 0) + 1
+
+            clients_data.append(client)
+
+        # 4. Calculate Top Distributor KPI
+        top_distributor_id = max(monthly_counts, key=monthly_counts.get, default=None)
+        top_distributor_kpi = 'N/A'
+        if top_distributor_id:
+            max_clients = monthly_counts[top_distributor_id]
+            name = distributor_map.get(top_distributor_id, 'Unknown')
+            # Use safe formatting for the template to render HTML content
+            top_distributor_kpi = f"{name} <span class=\"text-base text-gray-500 font-normal\">({max_clients} leads)</span>"
+
+        # 5. Prepare Context for Template
+        context = {
+            'clients': clients_data,
+            'kpi_total_clients': len(clients_data),
+            'kpi_clients_month': current_month_clients_count,
+            'kpi_top_distributor': top_distributor_kpi,
+            'user_email': request.session.get("user", {}).get("email", "Admin")  # Get logged in user's email
+        }
+
+        # 6. Render the Django template
+        return render(request, 'admin_client_list.html', context)
+
+    except Exception as e:
+        # Crucial for debugging: log the full error
+        print(f"Admin Client List Rendering Error: {e}")
+        # Return an empty list and an error message to the template
+        return render(request, 'admin_client_list.html', {
+            'error_message': f'Failed to load client data: {e}',
+            'clients': [],
+            # Reset KPIs for the error state
+            'kpi_total_clients': 0,
+            'kpi_clients_month': 0,
+            'kpi_top_distributor': 'Error'
+        })
