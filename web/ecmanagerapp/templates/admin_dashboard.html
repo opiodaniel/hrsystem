@@ -1,251 +1,154 @@
-{% extends 'admin_base.html' %}
+{% extends "base_admin_dashboard.html" %}
 {% load static %}
 
-    {% block content %}
-     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Performers (Monthly)</h2>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="font-bold text-lg text-indigo-600">#1</span>
-                            <span>Jane Smith</span>
-                            <span class="font-semibold text-gray-700">45 Clients</span>
-                        </div>
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="font-bold text-lg text-gray-600">#2</span>
-                            <span>Michael B.</span>
-                            <span class="font-semibold text-gray-700">38 Clients</span>
-                        </div>
-                        <p class="text-sm text-center text-gray-500 mt-4">View Full Leaderboard →</p>
-                    </div>
-                </div>
+{% block title %}
+   Admin
+{% endblock %}
 
-               <!-- Widget 2 (Col-span 1): Employee Registration Shortcut -->
-                <div class="bg-indigo-600 p-4 md:p-6 rounded-xl shadow-lg text-white flex flex-col justify-between order-1 lg:order-2">
-                    <div>
-                        <h2 class="text-lg md:text-xl font-bold mb-2">New Distributor Access</h2>
-                        <p class="text-indigo-200 text-sm">Onboard new distributor team members and grant system access.</p>
-                    </div>
-                    <!-- Button to open the Modal -->
-                    <button onclick="toggleModal(true)" class="mt-4 w-full bg-white text-indigo-600 font-bold py-3 rounded-lg hover:bg-gray-200 transition duration-150">
-                        + Register New Employee
-                    </button>
-                </div>
+ {% block add_css %}
+ <script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 
+{% block content %}
+
+<div class="row g-6">
+
+      <!-- Card Border Shadow -->
+
+      <div class="col-lg-3 col-sm-6">
+        <div class="card card-border-shadow-danger h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <div class="avatar me-4">
+                <span class="avatar-initial rounded bg-label-danger"><i class="fa fa-users text-warning" aria-hidden="true" style='font-size:50px;'></i></span>
+              </div>
+              <h4 class="mb-0">{{ total_employees }}</h4>
             </div>
-     <!-- EMPLOYEE REGISTRATION MODAL (The Popup) -->
-     <div id="registration-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 p-4 transition-opacity duration-300">
-        <!-- Modal Container (uses max-w-lg and custom-scrollbar for large forms) -->
-        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto custom-scrollbar transform scale-100 transition-transform duration-300"
-             onclick="event.stopPropagation()"> <!-- Prevents clicking inside from closing the modal -->
+            <p class="mb-2">Distributors</p>
+            <p class="mb-0">
+              <span class="text-heading fw-medium me-2">5</span>
+              <span class="text-muted">Distributors Added (This Month)</span>
+            </p>
+          </div>
+        </div>
+      </div>
 
-            <!-- Header -->
-            <div class="flex justify-between items-center border-b pb-3 mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Distributor Register</h2>
-                <button onclick="toggleModal(false)" class="text-gray-400 hover:text-gray-700">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+      <div class="col-lg-3 col-sm-6">
+        <div class="card card-border-shadow-primary h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <div class="avatar me-4">
+                <span class="avatar-initial rounded bg-label-info"><i class="fa fa-user-friends" aria-hidden="true" style='font-size:50px;color:blue'></i></span>
+              </div>
+              <h4 class="mb-0">{{ kpi_total_clients|default:0 }}</h4>
             </div>
+            <p class="mb-2">Clients</p>
+            <p class="mb-0">
+              <span class="text-heading fw-medium me-2">{{ kpi_clients_month|default:0 }}</span>
+              <span class="text-muted">Clients Added (This Month)</span>
+            </p>
+          </div>
+        </div>
+      </div>
 
-            <!-- Optional: Message Display -->
-            <!-- Note: This uses client-side placeholder; replace with server-side template logic (e.g., Django/Jinja) -->
-            <div id="message-display" class="hidden p-3 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
-                <!-- Error messages will appear here -->
+      <div class="col-lg-3 col-sm-6">
+        <div class="card card-border-shadow-info h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <div class="avatar me-4">
+                <span class="avatar-initial rounded bg-label-info"><i class="fa fa-chart-bar fa-3x text-info"></i></span>
+              </div>
+              <h4 class="mb-0">{{total_sales_previous_months_sum}}</h4>
             </div>
+            <p class="mb-2">Clients Added (This Month)</p>
+            <p class="mb-0">
+              <!--
+              <span class="text-heading fw-medium me-2">-8.7%</span>
+              <span class="text-muted">than last week</span>
+              -->
+            </p>
+          </div>
+        </div>
+      </div>
 
-            <!-- FORM START -->
-            <form id="formAccountSettings" method="POST" class="space-y-6" action="{% url 'register_form' %}">
-                <!-- CSRF Token Placeholder -->
-                {% csrf_token %}
-
-                <!-- Form Fields Grid (Responsive Layout) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-
-                    <!-- Email -->
-                    <div>
-                        <label for="id_email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150" placeholder="op@gmail.com" maxlength="320" required="" id="id_email">
-                    </div>
-
-                    <!-- Full Name -->
-                    <div>
-                        <label for="id_full_name" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="full_name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150" placeholder="opio" required="" id="id_full_name">
-                    </div>
+      <div class="col-lg-3 col-sm-6">
+        <div class="card card-border-shadow-success h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <div class="avatar me-4">
+                <span class="avatar-initial rounded bg-label-success"><i class="fa fa-chart-line fa-3x text-success"></i></span>
+              </div>
+              <h4 class="mb-0">{{ kpi_top_distributor|default:"N/A"|safe }}</h4>
+            </div>
+            <p class="mb-2">Top Generator</p>
+            <p class="mb-0">
+              <span class="text-heading fw-medium me-2">{{ clients_entered }}</span>
+              <span class="text-muted">Clients this month</span>
+            </p>
+          </div>
+        </div>
+      </div>
 
 
-                    <!-- Password -->
-                    <div>
-                        <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input type="password" name="password1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10 transition duration-150" placeholder="Enter password" required="" id="id_password1">
-                            <i class="fa fa-eye-slash absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-gray-700" id="togglePassword1"></i>
-                        </div>
-                         <p class="text-xs text-red-500 mt-1">Click the eye icon to show/hide the password.</p>
-                    </div>
 
-                    <!-- Confirm Password -->
-                    <div>
-                        <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input type="password" name="password2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10 transition duration-150" placeholder="Confirm password" required="" id="id_password2">
-                            <i class="fa fa-eye-slash absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-gray-700" id="togglePassword2"></i>
-                        </div>
-                    </div>
+      <!-- Monthly Sales Start End -->
 
+      <!--bar Graph of Employees with Approved client  -->
+      <div class="col-xxl-9">
+        <div class="card h-100">
+          <div class="card-body">
+              {% include 'distributors.html' %}
+          </div>
+        </div>
+      </div>
+      <!--/ End -->
+
+      <!--Graph of Approved/pending Detail-->
+      <div class="col-xxl-3 col-lg-5">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between">
+            <div class="card-title mb-0">
+              <h5 class="mb-1 me-2">Clients Overview</h5>
+              <!--<p class="card-subtitle">12% increase in this month</p>-->
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="clientsPieChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <!--/ Graph of Approved/pending Detail -->
+
+      {% include 'clients.html' %}
+      <!-- / Performance -->
+  </div>
+{% endblock %}
+
+ <!-- Footer Start -->
+{% block footer %}
+<div class="content-wrapper">
+    <div class="container-p-y container-xxl flex-grow-1">
+        <div class="bg-light rounded-top p-4">
+            <div class="row">
+                <div class="col-12 col-sm-6 text-center text-sm-start">
+                    &copy; <a href="#">@AcDantez</a>, All Right Reserved.
                 </div>
-
-                <!-- Submit Button -->
-                <div class="pt-4 border-t mt-6">
-                    <button type="submit" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200 shadow-md">
-                        Register Distributor
-                    </button>
-                    <!-- Close button for secondary action -->
-                    <button type="button" onclick="toggleModal(false)" class="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-200">
-                        Cancel
-                    </button>
+                <div class="col-12 col-sm-6 text-center text-sm-end">
+                    <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                    Designed By <a href="#">@AcDantez</a>
+                    <br>Distributed By: <a href="#">@AcDantez</a>
                 </div>
-            </form>
-            <!-- FORM END -->
+            </div>
         </div>
     </div>
-    {% endblock content %}
+</div>
+{% endblock %}
+<!-- Footer End -->
 
-    {% block script %}
-    <script>
-        const togglePassword1 = document.querySelector("#togglePassword1");
-        const password1 =  document.getElementById("id_password1");
-        togglePassword1.addEventListener("click", function () {
-            // toggle the type attribute
-            const type = password1.getAttribute("type") === "password" ? "text" : "password";
-            password1.setAttribute("type", type);
-            // toggle the icon
-            this.classList.toggle("bi-eye");
-        });
+{% block add_js %}
 
-        const togglePassword2 = document.querySelector("#togglePassword2");
-        const password2 =  document.getElementById("id_password2");
-        togglePassword2.addEventListener("click", function () {
-            // toggle the type attribute
-            const type = password2.getAttribute("type") === "password" ? "text" : "password";
-            password2.setAttribute("type", type);
-            // toggle the icon
-            this.classList.toggle("bi-eye");
-        });
-
-        // prevent form submit
-        const form = document.querySelector("form");
-        form.addEventListener('submit', function (e) {
-            //e.preventDefault();
-        });
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript">
-      // ---- CSRF setup ----
-      var csrftoken = Cookies.get('csrftoken');
-
-      function csrfSafeMethod(method) {
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-      }
-
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
-        }
-      });
-
-      // ---- Document Ready ----
-      $(document).ready(function () {
-        const registerForm = document.getElementById('formAccountSettings');
-
-        registerForm.addEventListener('submit', function(event) {
-          event.preventDefault(); // prevent default form submit
-
-          const form = $(this);
-          const url = form.attr('action');
-
-          // Collect form data
-          const full_name = form.find('[name="full_name"]').val().trim();
-          const email = form.find('[name="email"]').val().trim();
-          const password1 = form.find('[name="password1"]').val();
-          const password2 = form.find('[name="password2"]').val();
-
-          // Simple validations
-          if (!email || !password1 || !password2) {
-            showErrorMessage("All fields are required.");
-            return;
-          }
-
-          if (password1 !== password2) {
-            showErrorMessage("Passwords do not match.");
-            return;
-          }
-
-          // Disable submit button + show loading state
-          const submitBtn = form.find('button[type="submit"]');
-          const originalText = submitBtn.html();
-          submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Registering...');
-          submitBtn.prop('disabled', true);
-
-          // ---- AJAX POST ----
-          $.ajax({
-            url: url,
-            type: 'POST',
-            data: {
-              full_name,
-              email,
-              password1,
-              password2
-            },
-            dataType: 'json'
-          })
-          .done(function(response) {
-            if (response.status === 'success') {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: response.message,
-                showConfirmButton: false,
-                timer: 2000
-              });
-              registerForm.reset();
-              toggleModal(false); // close modal
-            } else {
-              showErrorMessage(response.message || "An error occurred.");
-            }
-          })
-          .fail(function(xhr, status, error) {
-            if (xhr.responseJSON) {
-              showErrorMessage(xhr.responseJSON.message || "Server error.");
-            } else if (status === 'timeout') {
-              showErrorMessage("Request timed out. Please check your connection.");
-            } else {
-              showErrorMessage("Network error. Please try again.");
-            }
-          })
-          .always(function() {
-            submitBtn.html(originalText);
-            submitBtn.prop('disabled', false);
-          });
-        });
-
-        // ---- Error Message Helper ----
-        function showErrorMessage(message) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: message,
-          });
-        }
-      });
-    </script>
-    {% endblock script %}
+{% endblock %}
 
 

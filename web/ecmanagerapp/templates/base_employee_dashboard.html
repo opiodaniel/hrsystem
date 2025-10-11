@@ -1,0 +1,41 @@
+{% extends "base_eternal.html" %}
+{% load static %}
+
+       {% block title %}
+         Admin
+       {% endblock %}
+
+       {% block add_css %}
+         <script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+         <script src="{% static 'js/bootstrap.min.js' %}"></script>
+         <style>
+            table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    th, td {
+                        padding: 8px;
+                        border: 1px solid black;
+                    }
+
+                    /* Truncate long text and display ellipsis */
+                    .truncate {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    /* Responsive styles */
+                    @media screen and (max-width: 600px) {
+                        th, td {
+                            padding: 4px;
+                        }
+
+                        .truncate {
+                                max-width: 90px; /* Adjust max-width as needed */
+                            }
+                    }
+        </style>
+       {% endblock %}
+

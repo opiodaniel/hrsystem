@@ -1,371 +1,436 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Client Entry Hub</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- jQuery for AJAX and DOM manipulation -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        main::-webkit-scrollbar { width: 8px; }
-        main::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
-        .active-nav-link { background-color: #4338ca; font-weight: 600; }
-        .active-nav-link:hover { background-color: #4338ca; }
-    </style>
-</head>
-<body class="bg-gray-100 flex h-screen font-sans">
+{% extends "base_employee_dashboard.html" %}
+{% load static %}
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3">
-        <!-- Toasts will be injected here -->
-    </div>
+{% block title %}
+  Distributor
+{% endblock %}
 
-    <!-- 1. Left Sidebar (Employee Navigation) -->
-    <aside id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 flex-col
-                          fixed inset-y-0 left-0 transform -translate-x-full
-                          md:relative md:translate-x-0 transition duration-300 ease-in-out z-20 shadow-xl">
 
-        <div class="p-6 text-2xl font-bold text-green-400 border-b border-gray-700">
-            Distributor Portal
+{% block content %}
+  <div class="row g-6">
+          <!-- Card Border Shadow -->
+          <div class="col-lg-3 col-sm-6">
+            <div class="card card-border-shadow-success h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar me-4">
+                    <span class="avatar-initial rounded bg-label-success"><i class="fa fa-chart-line fa-3x text-success"></i></span>
+                  </div>
+                  <h4 class="mb-0">{{ total_commission }}</h4>
+                </div>
+                <p class="mb-2">Total Commission</p>
+                <p class="mb-0">
+                  <!--
+                  <span class="text-heading fw-medium me-2">+18.2%</span>
+                  <span class="text-muted">than last week</span>
+                  -->
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-sm-6">
+            <div class="card card-border-shadow-info h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar me-4">
+                    <span class="avatar-initial rounded bg-label-info"><i class="fa fa-chart-bar fa-3x text-info" aria-hidden="true"></i></span>
+                  </div>
+                  <h4 class="mb-0">{{ total_paid }}</h4>
+                </div>
+                <p class="mb-2">Total Amount Paid</p>
+                <p class="mb-0">
+                  <!--
+                  <span class="text-heading fw-medium me-2">-8.7%</span>
+                  <span class="text-muted">than last week</span>
+                  -->
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-sm-6">
+            <div class="card card-border-shadow-danger h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar me-4">
+                    <span class="avatar-initial rounded bg-label-danger"><i class="fa fa-chart-area text-danger" aria-hidden="true" style='font-size:40px;'></i></span>
+                  </div>
+                  <h4 class="mb-0">{{ balance}}</h4>
+                </div>
+                <p class="mb-2">Total Balance</p>
+                <p class="mb-0">
+                  <!--
+                  <span class="text-heading fw-medium me-2">+4.3%</span>
+                  <span class="text-muted">than last week</span>
+                  -->
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-sm-6">
+            <div class="card card-border-shadow-primary h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar me-4">
+                    <span class="avatar-initial rounded bg-label-info"><i class="fa fa-users " aria-hidden="true" style='font-size:40px;color:blue'></i></span>
+                  </div>
+                  <h4 class="mb-0">{{total_number_of_clients}}</h4>
+                </div>
+                <p class="mb-2">All Clients</p>
+                <p class="mb-0">
+                  <!--
+                  <span class="text-heading fw-medium me-2">-2.5%</span>
+                  <span class="text-muted">than last week</span>
+                  -->
+                </p>
+              </div>
+            </div>
+          </div>
+          <!--/ Card Border Shadow -->
+
+          <!-- Vehicles overview -->
+          <div class="col-xxl-4">
+            <div class="card h-80">
+              <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="card-title mb-0">
+                  <h5 class="m-0 me-2">Approved/pending Clients</h5>
+                </div>
+              </div>
+              <div class="card-body">
+                  <canvas  id="transaction-history" class="transaction-chart" ></canvas>
+              </div>
+            </div>
+          </div>
+          <!--/ Vehicles overview -->
+
+         <!-- Shipment statistics-->
+          <div class="col-xxl-8 col-lg-5">
+            <div class="card h-100">
+              <div class="card-header d-flex justify-content-between">
+                <div class="card-title mb-0">
+                  <h5 class="mb-1 me-2">LeadBoard(Top 5)</h5>
+                  <!--<p class="card-subtitle">12% increase in this month</p>-->
+                </div>
+              </div>
+              <div class="card-body">
+                {% for top_employee in top_employees %}
+                <ul class="p-0 m-0">
+                  <li class="d-flex mb-6 align-items-center">
+                    <div class="avatar flex-shrink-0 me-4">
+                      <img class="rounded-circle flex-shrink-0" src="{{ top_employee.profile_pic.url }}" alt="" style="width: 50px; height: 50px;">
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                      <div class="me-2">
+                        <h6 class="mb-1 fw-normal">{{ top_employee }}</h6>
+                        <p class="text-success mb-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                              <path fill="currentColor" d="m6.293 13.293l1.414 1.414L12 10.414l4.293 4.293l1.414-1.414L12 7.586z"/>
+                          </svg>
+                          {{ top_employee.clients_count }} clients
+                        </p>
+                      </div>
+                      <div class="user-progress">
+                        <!--<h6 class="mb-0">10k</h6>-->
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <!--/ Shipment statistics -->
+
+
+          <div class="container-fluid py-4">
+            <div class="row g-4">
+                <!-- Left Column: New Client Entry Form (col-lg-4 equivalent to lg:col-span-1) -->
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-lg border-0 form-card h-100">
+                        <div class="card-body p-4">
+                            <h2 class="card-title h4 fw-bold text-dark mb-4 border-bottom pb-2">Log New Client Lead</h2>
+                            <form id="new-client-form" class="needs-validation" novalidate>
+
+                                <!-- Client Full Name -->
+                                <div class="mb-3">
+                                    <label for="client_name" class="form-label text-muted fw-medium">Client Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="client_name" name="client_name" required class="form-control" placeholder="John Doe">
+                                    <div class="invalid-feedback">Client name is required.</div>
+                                </div>
+
+                                <!-- Contact 1 -->
+                                <div class="mb-3">
+                                    <label for="contact_1" class="form-label text-muted fw-medium">Contact 1 (Primary) <span class="text-danger">*</span></label>
+                                    <input type="text" id="contact_1" name="contact_1" required class="form-control" placeholder="e.g., +1 555 123 4567 or email@example.com">
+                                    <div class="invalid-feedback">Primary contact is required.</div>
+                                </div>
+
+                                <!-- Contact 2 -->
+                                <div class="mb-3">
+                                    <label for="contact_2" class="form-label text-muted fw-medium">Contact 2 (Optional)</label>
+                                    <input type="text" id="contact_2" name="contact_2" class="form-control" placeholder="Alternative Phone or Email">
+                                </div>
+
+                                <!-- Initial Notes -->
+                                <div class="mb-4">
+                                    <label for="initial_notes" class="form-label text-muted fw-medium">Initial Notes</label>
+                                    <textarea id="initial_notes" name="initial_notes" rows="3" class="form-control" placeholder="Key points from the conversation, status, etc."></textarea>
+                                </div>
+
+                                <button type="submit" id="client-submit-btn" class="btn btn-info btn-lg w-100 fw-semibold shadow-sm d-flex align-items-center justify-content-center">
+                                    <!-- SVG Icon (using Font Awesome class for cleaner Bootstrap look or inline SVG) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                                    <span>Submit New Client</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: My Clients List (col-lg-8 equivalent to lg:col-span-2) -->
+                <div class="col-12 col-lg-8">
+                    <div class="card shadow-lg border-0 h-100">
+                        <div class="card-body p-4">
+                            <h2 class="h4 fw-bold text-dark mb-4 border-bottom pb-2">My Clients (158 Total)</h2>
+
+                            <!-- Search and Filter -->
+                            <div class="mb-4 d-flex gap-2">
+                                <input type="text" placeholder="Filter by client name..." class="form-control flex-grow-1">
+                                <button class="btn btn-outline-secondary">Search</button>
+                            </div>
+
+                            <!-- Client List Table -->
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col" class="text-uppercase text-secondary fs-6 fw-medium">Client Name</th>
+                                            <th scope="col" class="text-uppercase text-secondary fs-6 fw-medium">Contact 1</th>
+                                            <th scope="col" class="text-center text-uppercase text-secondary fs-6 fw-medium">Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Client Data (DUMMY) -->
+                                        <tr>
+                                            <td>Acme Corporation</td>
+                                            <td>909-555-1212</td>
+                                            <td class="text-center">
+                                                <span class="badge rounded-pill text-bg-primary">Edit</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Globex Holdings</td>
+                                            <td>john@globex.com</td>
+                                            <td class="text-center">
+                                                <span class="badge rounded-pill text-bg-primary">Edit</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Stark Industries</td>
+                                            <td>212-555-4444</td>
+                                            <td class="text-center">
+                                                <span class="badge rounded-pill text-bg-primary">Edit</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+<!-- Toast Notification Container (for custom JS toasts) -->
+<div id="toast-container" aria-live="polite" aria-atomic="true">
+    <!-- Toasts will be appended here by the showToast function -->
+</div>
+
+<!-- Reusable Bootstrap Modal -->
+<div class="modal fade" id="detail-modal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">Client Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Modal content goes here -->
+                <p>This is a reusable modal using the standard Bootstrap component.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
-        <nav class="flex-1 p-4 space-y-1">
-
-            <!-- Link 1: My Hub (Active) -->
-            <a href="#" class="nav-link active-nav-link flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-green-600 transition duration-150">
-                <!-- SVG Icon: Dashboard/Hub -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                <span>My Client Hub</span>
-            </a>
-
-            <!-- Link 2: My Performance -->
-            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-green-600 transition duration-150">
-                <!-- SVG Icon: Performance/Leaderboard -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                <span>Leaderboard</span>
-            </a>
-
-        </nav>
-
-        <!-- Mobile close button -->
-        <button onclick="toggleSidebar()" class="absolute top-2 right-2 text-white md:hidden">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-    </aside>
-
-    <!-- Main Content Wrapper -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-
-        <!-- 2. Header / Top Bar -->
-        <header class="bg-white shadow p-4 flex justify-between items-center z-10">
-            <div class="flex items-center">
-                <!-- Hamburger Menu Button -->
-                <button onclick="toggleSidebar()" class="text-gray-600 md:hidden mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Hello, Jane Smith!</h1>
-            </div>
-
-            <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600 hidden sm:block">Role: Sales Representative</span>
-                <button class="text-sm text-gray-500 hover:text-gray-800 transition">Logout</button>
-            </div>
-        </header>
-
-        <!-- 3. Employee Content (Metrics, Form, List) -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 space-y-6">
-
-            <!-- Personal KPI Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                <!-- KPI Card 1: Clients Logged This Month -->
-                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-green-500">
-                    <p class="text-sm font-medium text-gray-500">Clients Logged This Month</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">45</p>
-                </div>
-
-                <!-- KPI Card 2: Pending Follow-ups -->
-                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-yellow-500">
-                    <p class="text-sm font-medium text-gray-500">Pending Follow-ups</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">12</p>
-                </div>
-
-                <!-- KPI Card 3: Total Clients (All Time) -->
-                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-indigo-500">
-                    <p class="text-sm font-medium text-gray-500">Total Clients (All Time)</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">158</p>
-                </div>
-
-                <!-- KPI Card 4: Last Activity -->
-                <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-gray-400">
-                    <p class="text-sm font-medium text-gray-500">Last Client Logged</p>
-                    <p class="text-xl font-bold text-gray-900 mt-2">2 hours ago</p>
-                </div>
-            </div>
-
-            <!-- Main Content: Client Submission Form & List -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                <!-- Left Column: New Client Entry Form (Primary Focus) -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white p-6 rounded-xl shadow-2xl sticky top-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Log New Client Lead</h2>
-                        <form id="new-client-form" class="space-y-4">
-
-                            <!-- Client Full Name -->
-                            <div>
-                                <label for="client_name" class="block text-sm font-medium text-gray-700 mb-1">Client Full Name <span class="text-red-500">*</span></label>
-                                <input type="text" id="client_name" name="client_name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="John Doe">
-                            </div>
-
-                            <!-- Contact 1 -->
-                            <div>
-                                <label for="contact_1" class="block text-sm font-medium text-gray-700 mb-1">Contact 1 (Primary) <span class="text-red-500">*</span></label>
-                                <input type="text" id="contact_1" name="contact_1" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="e.g., +1 555 123 4567 or email@example.com">
-                            </div>
-
-                            <!-- Contact 2 -->
-                            <div>
-                                <label for="contact_2" class="block text-sm font-medium text-gray-700 mb-1">Contact 2 (Optional)</label>
-                                <input type="text" id="contact_2" name="contact_2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="Alternative Phone or Email">
-                            </div>
-
-                            <!-- Initial Notes -->
-                            <div>
-                                <label for="initial_notes" class="block text-sm font-medium text-gray-700 mb-1">Initial Notes</label>
-                                <textarea id="initial_notes" name="initial_notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="Key points from the conversation, status, etc."></textarea>
-                            </div>
-
-                            <button type="submit" id="client-submit-btn" class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition duration-150 shadow-md flex items-center justify-center space-x-2">
-                                <!-- SVG Icon: Checkmark/Submit -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-                                <span>Submit New Client</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Right Column: My Clients List -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">My Clients (158 Total)</h2>
-
-                        <!-- Search and Filter (Simplified) -->
-                        <div class="mb-4 flex space-x-3">
-                            <input type="text" placeholder="Filter by client name..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
-                            <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Search</button>
-                        </div>
-
-                        <!-- Client List Table -->
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact 1</th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <!-- Client Data (DUMMY) -->
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Acme Corporation</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">909-555-1212</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                Pending
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Globex Holdings</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">john@globex.com</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Approved
-                                            </span>
-                                        </td>
-                                    </tr>
-                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Stark Industries</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">212-555-4444</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Rejected
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
     </div>
+</div>
 
-    <!-- Reusable Modal (if needed for follow-up actions like 'View Client Details') -->
-    <div id="detail-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-40 p-4">
-        <!-- Modal content goes here -->
-    </div>
 
+
+
+  </div>
+{% endblock %}
+
+{% block add_js %}
     <script>
-        // --- Modal Control Functions (Simplified for this file) ---
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+    // NOTE: This assumes 'Cookies' and 'csrftoken' are available globally, as per your original script.
+    // Since we don't have the context for those, I've left the AJAX setup as-is, assuming they work in your environment.
+
+    // --- Modal Control Functions (Adapted to use Bootstrap 5 JS API) ---
+    const detailModal = new bootstrap.Modal(document.getElementById('detail-modal'), {});
+
+    function openModal(id) {
+        // Since we only have one modal (#detail-modal) configured, we can trigger it directly
+        if (id === 'detail-modal') {
+             detailModal.show();
+        }
+    }
+
+    function closeModal(id) {
+        if (id === 'detail-modal') {
+             detailModal.hide();
+        }
+    }
+
+    // --- Toast Notification System (Redesigned with custom Bootstrap-friendly styling) ---
+    function showToast(message, type = 'success') {
+        const container = $('#toast-container');
+        let colorClass = '';
+        let iconPath = '';
+
+        if (type === 'success') {
+            colorClass = 'bg-success';
+            iconPath = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+        } else if (type === 'error') {
+            colorClass = 'bg-danger';
+            iconPath = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+        } else {
+             colorClass = 'bg-info';
+             iconPath = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+        }
+
+        const toast = $(`
+            <div class="p-3 rounded custom-toast text-white d-flex align-items-center mb-2 shadow ${colorClass}" role="alert" aria-live="assertive" aria-atomic="true">
+                <svg class="flex-shrink-0 me-2" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    ${iconPath}
+                </svg>
+                <div class="me-auto fw-medium">${message}</div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `);
+
+        container.append(toast);
+
+        // Animate in using custom class and slight delay
+        setTimeout(() => toast.addClass('show-toast'), 10);
+
+        // Animate out and remove after 5 seconds
+        setTimeout(() => {
+            toast.removeClass('show-toast');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+
+    // --- Placeholder for CSRF/Auth (needed for your AJAX call) ---
+    var csrftoken = Cookies.get('csrftoken'); // Replace with actual logic if needed
+
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+    });
+
+    $(document).ready(function() {
+        // Conceptual URL for the server-side view (assuming Django/Flask route)
+        const SUBMIT_URL = '/api/submit_client_lead/';
+
+        // --- 1. Client Submission Form Handling (AJAX) ---
+        $('#new-client-form').on('submit', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const submitBtn = $('#client-submit-btn');
+            const originalText = submitBtn.html();
+
+            // 1. Collect and Validate Data
+            const clientName = $('#client_name').val().trim();
+            const contact1 = $('#contact_1').val().trim();
+            const contact2 = $('#contact_2').val().trim();
+            const initialNotes = $('#initial_notes').val().trim();
+
+            let isValid = true;
+
+            // Simple validation check
+            if (clientName.length < 3) {
+                 $('#client_name').addClass('is-invalid');
+                 isValid = false;
+            } else {
+                 $('#client_name').removeClass('is-invalid').addClass('is-valid');
             }
-        }
 
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.remove('flex');
-                modal.classList.add('hidden');
-            }
-        }
-
-        // --- Toast Notification System ---
-        function showToast(message, type = 'success') {
-            const container = $('#toast-container');
-            const toast = $(`
-                <div class="p-4 rounded-lg shadow-xl text-white flex items-center space-x-3 transition-opacity duration-300 opacity-0 transform translate-y-2"
-                     style="min-width: 250px;"
-                     data-type="${type}">
-                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' : ''}
-                        ${type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' : ''}
-                    </svg>
-                    <span class="text-sm font-medium">${message}</span>
-                </div>
-            `);
-
-            if (type === 'success') {
-                toast.addClass('bg-green-500');
-            } else if (type === 'error') {
-                toast.addClass('bg-red-500');
+            if (contact1.length < 5) { // Basic length check for phone or email
+                 $('#contact_1').addClass('is-invalid');
+                 isValid = false;
+            } else {
+                 $('#contact_1').removeClass('is-invalid').addClass('is-valid');
             }
 
-            container.append(toast);
-
-            // Animate in
-            setTimeout(() => toast.css({ 'opacity': '1', 'transform': 'translateY(0)' }), 10);
-
-            // Animate out and remove
-            setTimeout(() => {
-                toast.css({ 'opacity': '0', 'transform': 'translateY(-10px)' });
-                setTimeout(() => toast.remove(), 300);
-            }, 5000);
-        }
-
-        // --- Sidebar Toggle ---
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
-        }
-
-        var csrftoken = Cookies.get('csrftoken');
-
-        function csrfSafeMethod(method) {
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-              }
+            if (!isValid) {
+                 showToast("Please correct the required fields.", 'error');
+                 return;
             }
-        });
-        $(document).ready(function() {
 
-            // Conceptual URL for the server-side view (assuming Django/Flask route)
-            const SUBMIT_URL = '/api/submit_client_lead/';
+            // 2. Prepare JSON Payload
+            const payload = {
+                fullName: clientName,
+                contact1: contact1,
+                contact2: contact2 || null, // Send null if contact2 is empty
+                initialNotes: initialNotes
+            };
 
-            // --- 1. Client Submission Form Handling (AJAX) ---
-            $('#new-client-form').on('submit', function(e) {
-                e.preventDefault();
+            // 3. Update UI for Submission (Bootstrap spinner)
+            submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Submitting...');
+            submitBtn.prop('disabled', true);
 
-                const form = $(this);
-                const submitBtn = $('#client-submit-btn');
-                const originalText = submitBtn.html();
-
-                // 1. Collect and Validate Data
-                const clientName = $('#client_name').val().trim();
-                const contact1 = $('#contact_1').val().trim();
-                const contact2 = $('#contact_2').val().trim();
-                const initialNotes = $('#initial_notes').val().trim();
-
-                if (clientName.length < 3) {
-                     showToast("Client Full Name must be at least 3 characters.", 'error');
-                     return;
-                }
-                if (contact1.length < 5) { // Basic length check for phone or email
-                     showToast("Primary contact is required.", 'error');
-                     return;
-                }
-
-                // 2. Prepare JSON Payload (Matches expected structure in views.py)
-                const payload = {
-                    fullName: clientName,
-                    contact1: contact1,
-                    contact2: contact2 || null, // Send null if contact2 is empty
-                    initialNotes: initialNotes
-                };
-
-                // 3. Update UI for Submission
-                submitBtn.html('<svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Submitting...');
-                submitBtn.prop('disabled', true);
-
-                // 4. AJAX Call to Server
-                $.ajax({
-                    url: SUBMIT_URL,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(payload),
-                    success: function(response) {
-                        // Assuming response is { message: "...", id: "..." }
-                        showToast(`Client ${clientName} logged successfully! ID: ${response.id}`, 'success');
-                        form.trigger('reset'); // Clear the form on success
-                        // In a real app, you would dynamically update the client list here.
-                    },
-                    error: function(xhr, status, error) {
-                        let errorMessage = "An unknown error occurred.";
-                        try {
-                            const errorJson = JSON.parse(xhr.responseText);
-                            errorMessage = errorJson.error || errorJson.message || errorMessage;
-                        } catch (e) {
-                            // If response is not JSON, use the HTTP status/message
-                            errorMessage = `Error ${xhr.status}: ${error}`;
-                        }
-
-                        showToast(`Submission failed: ${errorMessage}`, 'error');
-                    },
-                    complete: function() {
-                        // Reset button state regardless of success or failure
-                        submitBtn.html(originalText);
-                        submitBtn.prop('disabled', false);
+            // 4. Actual AJAX Call (Uncomment and remove mock above when deployed)
+            $.ajax({
+                url: SUBMIT_URL,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function(response) {
+                    showToast(`Client ${clientName} logged successfully! ID: ${response.id}`, 'success');
+                    form.trigger('reset');
+                    $('.form-control').removeClass('is-valid is-invalid');
+                },
+                error: function(xhr) {
+                    let errorMessage = "An unknown error occurred.";
+                    try {
+                        const errorJson = JSON.parse(xhr.responseText);
+                        errorMessage = errorJson.error || errorJson.message || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Error ${xhr.status}: ${xhr.statusText}`;
                     }
-                });
-            });
-
-            // --- 2. Navigation Link Active State Handler ---
-            $('.nav-link').on('click', function(e) {
-                $('.nav-link').removeClass('active-nav-link');
-                $(this).addClass('active-nav-link');
-
-                if (window.innerWidth < 768) {
-                    toggleSidebar();
+                    showToast(`Submission failed: ${errorMessage}`, 'error');
+                },
+                complete: function() {
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
                 }
             });
-        });
-    </script>
 
-</body>
-</html>
+        });
+
+
+    });
+</script>
+
+{% endblock %}
+
+
+

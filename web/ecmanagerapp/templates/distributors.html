@@ -1,0 +1,482 @@
+<div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
+
+        <!-- Left Side: Title and Search Input -->
+        <h5 class="m-0">Distributors</h5>
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" id="distributorSearchInput" class="form-control" placeholder="Search by name or email...">
+            </div>
+        </div>
+
+        <!-- Right Side: Distributor Registration Button -->
+        <button id="registerDistributorBtn" type="button" class="btn btn-primary btn-sm" onclick="toggleModal(true)">
+            <i class="fas fa-user-plus me-1"></i> Register Distributor
+        </button>
+
+      </div>
+      <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                <div class="table-responsive">
+                   <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <!-- id="scroll-table" -->
+                        <table  id="employee-list-table" class="table table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-primary">
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Last Login</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-dark" id="employeeTableBody">
+                               {% for emp in employees %}
+                                <tr data-uid="{{ emp.uid }}" data-name="{{ emp.email }}">
+                                    <td>{{ emp.full_name }}</td>
+                                    <td>{{ emp.email }}</td>
+                                    <td class="text-nowrap ">{{ emp.last_login }}</td>
+                                    <td>
+
+                                        <button type="button" class="delete-btn btn btn-sm btn-outline-danger"
+                                            >
+                                            delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+      </div>
+    </div>
+</div>
+
+<!-- EMPLOYEE DELETION CONFIRMATION MODAL (Bootstrap 5 Style) -->
+<div id="confirmation-modal" class="modal" tabindex="-1" style="display: none; background-color: rgba(0, 0, 0, 0.5);"
+     onclick="toggleConfirmationModal(false)">
+
+    <!-- FIX: Added onclick="event.stopPropagation()" here -->
+    <div class="modal-dialog modal-dialog-centered" onclick="event.stopPropagation()">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0L.015 13.9a1.13 1.13 0 0 0 .982 1.6h13.986a1.13 1.13 0 0 0 .982-1.6zM8 12.997a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0-8a1 1 0 0 1 1 1v3a1 1 0 0 1-2 0V6a1 1 0 0 1 1-1"/>
+                    </svg>
+                    Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                        onclick="toggleConfirmationModal(false)"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <p>Are you sure you want to permanently delete employee <span id="employee-name-to-delete" class="fw-bold text-danger"></span>? This action cannot be undone.</p>
+            </div>
+
+            <!-- Modal Footer (Actions) -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        onclick="toggleConfirmationModal(false)">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger"
+                        onclick="deleteEmployee()"
+                        id="confirm-delete-btn">
+                    Yes, Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- EMPLOYEE REGISTRATION MODAL (The Popup - Bootstrap 5) -->
+<div id="registration-modal" class="modal" tabindex="-1" style="display: none; background-color: rgba(0, 0, 0, 0.5);"
+     onclick="toggleModal(false)">
+
+    <!-- FIX: Added onclick="event.stopPropagation()" here -->
+    <div class="modal-dialog modal-dialog-centered modal-lg" onclick="event.stopPropagation()">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Distributor Register</h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                        onclick="toggleModal(false)"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <!-- Optional: Message Display (Using Bootstrap Alert) -->
+                <!-- Note: 'd-none' is used to hide it initially -->
+                <div id="message-display" class="alert alert-danger d-none" role="alert">
+                    <!-- Error messages will appear here -->
+                </div>
+
+                <!-- FORM START -->
+                <form id="formAccountSettings" method="POST" action="{% url 'register_form' %}">
+                    <!-- CSRF Token Placeholder -->
+                    {% csrf_token %}
+
+                    <!-- Form Fields Grid (Responsive Layout) -->
+                    <div class="row g-3">
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="id_email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" placeholder="op@gmail.com" maxlength="320" required id="id_email">
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+                            <label for="id_full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="full_name" class="form-control" placeholder="opio" required id="id_full_name">
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-md-6">
+                            <label for="id_password1" class="form-label">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="password" name="password1" class="form-control" placeholder="Enter password" required id="id_password1">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword1">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Click the eye icon to show/hide the password.</small>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="col-md-6">
+                            <label for="id_password2" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="password" name="password2" class="form-control" placeholder="Confirm password" required id="id_password2">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- FORM END -->
+            </div>
+
+            <!-- Footer (Actions) -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="toggleModal(false)">
+                    Cancel
+                </button>
+                <!-- This button triggers the form submit using the 'form' attribute -->
+                <button type="submit" form="formAccountSettings" class="btn btn-primary" id="registerSubmitBtn">
+                    Register Distributor
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION CONTAINER (Global Message Area) -->
+<!-- NOTE: The toast implementation still relies on Tailwind classes (e.g., fixed, top-4, bg-green-600)
+     which are not part of Bootstrap, but the core functionality remains. -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 w-full max-w-xs pointer-events-none">
+    <!-- Toasts will be dynamically inserted here -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+// ---- CSRF setup ----
+  var csrftoken = Cookies.get('csrftoken');
+
+  function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+// Global variable to hold the UID of the employee pending deletion
+let employeeToDeleteUID = null;
+let employeeToDeleteName = null;
+
+// --- Modal Toggling Logic ---
+
+// Toggles the registration modal (now Bootstrap compatible)
+function toggleModal(show) {
+    const modal = document.getElementById('registration-modal');
+    if (show) {
+        // Show modal by setting display to block
+        modal.style.display = 'block';
+        modal.focus();
+    } else {
+        // Hide modal
+        modal.style.display = 'none';
+    }
+}
+
+// Toggles the deletion confirmation modal
+function toggleConfirmationModal(show) {
+    const modal = document.getElementById('confirmation-modal');
+    const nameSpan = document.getElementById('employee-name-to-delete');
+
+    if (show) {
+        // Show modal by overriding style="display: none;"
+        modal.style.display = 'block';
+        // Ensure the modal receives focus if needed for accessibility (Bootstrap modal default)
+        modal.focus();
+    } else {
+        // Hide modal
+        modal.style.display = 'none';
+        employeeToDeleteUID = null; // Clear UID on close
+        employeeToDeleteName = null;
+    }
+}
+
+// 5. Toast Notification System
+// (Retained original implementation, noting Tailwind dependencies)
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toast-container');
+    const color = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+
+    const toast = document.createElement('div');
+    toast.className = `${color} text-white px-4 py-3 rounded-lg shadow-xl mb-3 flex items-center transform transition-all duration-300 ease-out translate-x-full opacity-0 pointer-events-auto`;
+    toast.innerHTML = `
+        <i class="fas ${icon} mr-3"></i>
+        <span>${message}</span>
+    `;
+
+    toastContainer.prepend(toast);
+
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full', 'opacity-0');
+        toast.classList.add('translate-x-0', 'opacity-100');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove('translate-x-0', 'opacity-100');
+        toast.classList.add('translate-x-full', 'opacity-0');
+
+        toast.addEventListener('transitionend', () => {
+            if (toast.parentNode === toastContainer) {
+                toastContainer.removeChild(toast);
+            }
+        }, { once: true });
+
+    }, 5000);
+}
+
+// --- AJAX Deletion Logic ---
+
+function deleteEmployee() {
+    if (!employeeToDeleteUID) {
+        showToast("Error: No employee selected for deletion.", 'error');
+        toggleConfirmationModal(false);
+        return;
+    }
+
+    const deleteButton = $('#confirm-delete-btn');
+    const employeeRow = $(`tr[data-uid="${employeeToDeleteUID}"]`);
+
+    // Disable button and show loading state
+    deleteButton.prop('disabled', true).text('Deleting...').removeClass('btn-danger').addClass('btn-secondary');
+
+    // Assume the deletion endpoint is '/delete-employee/'
+    const url = '/delete-employee/';
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: { uid: employeeToDeleteUID }, // Send the UID in the data
+        dataType: 'json',
+
+        success: function(response) {
+            showToast(response.message || `Employee ${employeeToDeleteName} successfully deleted!`, 'success');
+            employeeRow.fadeOut(300, function() {
+                $(this).remove(); // Remove row from DOM on successful deletion
+            });
+            toggleConfirmationModal(false);
+        },
+        error: function(xhr) {
+            let errorMessage = 'Failed to delete employee.';
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                errorMessage = errorResponse.message || errorMessage;
+            } catch (e) {
+                errorMessage = `Error (${xhr.status}): Could not reach server.`;
+            }
+            showToast(errorMessage, 'error');
+        },
+        complete: function() {
+            // Re-enable button and reset state
+            deleteButton.prop('disabled', false).text('Yes, Delete').removeClass('btn-secondary').addClass('btn-danger');
+        }
+    });
+}
+
+// --- Password Visibility Logic (Moved from inline script) ---
+
+$(document).ready(function() {
+    // Password Toggle 1
+    $('#togglePassword1').on('click', function() {
+        const passwordField = $('#id_password1');
+        const icon = $(this).find('i');
+
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        }
+    });
+
+    // Password Toggle 2
+    $('#togglePassword2').on('click', function() {
+        const passwordField = $('#id_password2');
+        const icon = $(this).find('i');
+
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        }
+    });
+
+
+    // 6. Handle Clicks on Delete Buttons (Event Delegation)
+    $('#employee-list-table').on('click', '.delete-btn', function() {
+        const row = $(this).closest('tr');
+        const uid = row.data('uid');
+        const name = row.data('name');
+
+        if (uid) {
+            employeeToDeleteUID = uid;
+            employeeToDeleteName = name;
+            $('#employee-name-to-delete').text(name); // Update modal text
+            toggleConfirmationModal(true);
+        } else {
+            showToast("Error: Employee ID not found.", 'error');
+        }
+    });
+
+    // 7. Handle Search Input (Filtering Table)
+    $('#distributorSearchInput').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        const tableBodyRows = $('#employeeTableBody tr');
+
+        tableBodyRows.each(function() {
+            const row = $(this);
+            // Get text from Name (1st column) and Email (2nd column)
+            const name = row.find('td:eq(0)').text().toLowerCase();
+            const email = row.find('td:eq(1)').text().toLowerCase();
+
+            if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                row.show();
+            } else {
+                row.hide();
+            }
+        });
+    });
+
+    // 8. Handle Distributor Registration AJAX Submission (Moved from inline script)
+    const registerForm = document.getElementById('formAccountSettings');
+
+    registerForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // prevent default form submit
+
+      const form = $(this);
+      const url = form.attr('action');
+
+      // Collect form data
+      const full_name = form.find('[name="full_name"]').val().trim();
+      const email = form.find('[name="email"]').val().trim();
+      const password1 = form.find('[name="password1"]').val();
+      const password2 = form.find('[name="password2"]').val();
+
+      // Simple validations
+      if (!email || !password1 || !password2) {
+        showErrorMessage("All fields are required.");
+        return;
+      }
+
+      if (password1 !== password2) {
+        showErrorMessage("Passwords do not match.");
+        return;
+      }
+
+      // Disable submit button + show loading state
+      const submitBtn = form.find('#registerSubmitBtn');
+      const originalText = submitBtn.html();
+      submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Registering...');
+      submitBtn.prop('disabled', true);
+
+      // ---- AJAX POST ----
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+          full_name,
+          email,
+          password1,
+          password2
+        },
+        dataType: 'json'
+      })
+      .done(function(response) {
+        if (response.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: response.message,
+            showConfirmButton: false,
+            timer: 2000
+          });
+          registerForm.reset();
+          toggleModal(false); // close modal
+          // NOTE: You may want to dynamically add the new distributor row here
+        } else {
+          showErrorMessage(response.message || "An error occurred.");
+        }
+      })
+      .fail(function(xhr, status, error) {
+        if (xhr.responseJSON) {
+          showErrorMessage(xhr.responseJSON.message || "Server error.");
+        } else if (status === 'timeout') {
+          showErrorMessage("Request timed out. Please check your connection.");
+        } else {
+          showErrorMessage("Network error. Please try again.");
+        }
+      })
+      .always(function() {
+        submitBtn.html(originalText);
+        submitBtn.prop('disabled', false);
+      });
+    });
+
+    // ---- Error Message Helper ----
+    function showErrorMessage(message) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: message,
+      });
+    }
+
+});
+</script>

@@ -11,10 +11,13 @@ from firebase_admin import firestore
 import requests
 from django.conf import settings
 from django.contrib.auth import logout
+
 from .decorators import firebase_login_required, admin_required
 import datetime
 from datetime import timezone
 import pytz # Required for converting to local timezone
+from .distributor_data_utility import get_distributor_data
+from .client_data_utility import get_client_dashboard_data
 
 def register_form(request):
     if request.method == "POST":
@@ -107,7 +110,6 @@ def logout_form(request):
     return redirect('login_form')
 
 
-
 @require_POST
 def delete_employee(request):
     """
@@ -169,22 +171,38 @@ def employee_dashboard(request):
 @firebase_login_required
 @admin_required
 def admin_dashboard(request):
+    """
+    Renders the admin dashboard, fetching both distributor and client data
+    via reusable utility functions (DRY principle).
+    """
     user = request.session.get("user")
 
-    # Example: fetch all Firebase users (can be cached later)
-    employees = []
-    for user_record in auth.list_users().iterate_all():
-        employees.append({
-            "uid": user_record.uid,
-            "email": user_record.email,
-            "full_name":user_record.display_name
-        })
+    # 1. CALL THE UTILITY FUNCTION for Distributors
+    # This fetches the list of employees/distributors.
+    distributors = get_distributor_data()
 
+    # 2. CALL THE UTILITY FUNCTION for Clients/KPIs
+    # This fetches client list, total clients, monthly leads, and top distributor data.
+    client_metrics = get_client_dashboard_data()
+
+    # 3. Combine ALL data into a single context dictionary
     context = {
         "user": user,
-        "employees": employees,
-        "total_employees": len(employees),
+
+        # Distributor List Data (for the embedded list)
+        "employees": distributors,
+        "total_employees": len(distributors),
+
+        # Client Data and KPIs (for dashboard metrics and optional client lists)
+        "clients": client_metrics['clients'],
+        "kpi_total_clients": client_metrics['kpi_total_clients'],
+        "kpi_clients_month": client_metrics['kpi_clients_month'],
+        # Note: kpi_top_distributor now contains the live name and count
+        "kpi_top_distributor": client_metrics['kpi_top_distributor'],
+        "clients_entered": client_metrics['clients_entered'],
     }
+
+    # 4. Render the dashboard template
     return render(request, "admin_dashboard.html", context)
 
 
@@ -197,44 +215,13 @@ def distributor_list(request):
     """
     user = request.session.get("user")
 
-    distributors = []
+    # 1. CALL THE UTILITY FUNCTION to get the data
+    distributors = get_distributor_data()
 
-    # Define the local timezone object based on Django settings (e.g., Africa/Kampala)
-    local_tz = pytz.timezone(settings.TIME_ZONE)
-
-    # Iterate through all user records from Firebase Auth
-    for user_record in auth.list_users().iterate_all():
-
-        # 1. Initialize last_login_time to "Never"
-        last_login_time = "Never"
-
-        # FIX: Access the last sign-in timestamp from user_metadata for ExportedUserRecord
-        last_sign_in_ms = user_record.user_metadata.last_sign_in_timestamp
-
-        # 2. Check if the user has ever signed in (timestamp is not None)
-        if last_sign_in_ms:
-            # Firebase timestamps are in milliseconds; convert to seconds
-            last_sign_in_seconds = last_sign_in_ms / 1000.0
-
-            # Convert UTC timestamp to a timezone-aware datetime object (UTC is standard)
-            utc_dt = datetime.datetime.fromtimestamp(last_sign_in_seconds, tz=timezone.utc)
-
-            # Convert the UTC datetime to the local timezone (e.g., Africa/Kampala)
-            local_dt = utc_dt.astimezone(local_tz)
-
-            # 3. Format the Python datetime object into the desired clean string,
-            # using %Z to show the local timezone abbreviation (e.g., EAT)
-            last_login_time = local_dt.strftime('%b %d, %Y %I:%M %p %Z')
-
-        distributors.append({
-            "uid": user_record.uid,
-            "email": user_record.email,
-            "full_name": user_record.display_name or user_record.email,  # Use email if display_name is not set
-            "last_login": last_login_time,  # Now includes the local last login time
-        })
-
+    # 2. Add the data to the context
     context = {
         "user": user,
+        # 'employees' is the key your HTML template uses to loop through the list
         "employees": distributors,
         "total_employees": len(distributors),
     }
@@ -358,87 +345,35 @@ def admin_client_list(request):
     Renders the Admin Client List page by fetching, joining, and processing
     all necessary data and KPIs on the server-side.
     """
+    """
+    Renders the admin dashboard, fetching both distributor and client data
+    via reusable utility functions (DRY principle).
+    """
+    user = request.session.get("user")
 
-    try:
-        # Define Firestore paths using the secured app ID structure
-        CLIENTS_PATH = f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/clients'
-        DISTRIBUTORS_PATH = f'artifacts/{settings.FIREBASE_WEB_APP_ID}/public/data/distributors'
+    # 1. CALL THE UTILITY FUNCTION for Distributors
+    # This fetches the list of employees/distributors.
+    distributors = get_distributor_data()
 
-        # 1. Fetch Distributors (UID -> Name Map for Joining)
-        distributor_map = {}
-        distributors_snapshot = db.collection(DISTRIBUTORS_PATH).get()
-        for doc in distributors_snapshot:
-            data = doc.to_dict()
-            distributor_map[doc.id] = data.get('full_name', 'N/A')
+    # 2. CALL THE UTILITY FUNCTION for Clients/KPIs
+    # This fetches client list, total clients, monthly leads, and top distributor data.
+    client_metrics = get_client_dashboard_data()
 
-        # 2. Fetch All Clients and Initialize KPI Counters
-        clients_snapshot = db.collection(CLIENTS_PATH).get()
-        clients_data = []
+    # 3. Combine ALL data into a single context dictionary
+    context = {
+        "user": user,
 
-        # Use datetime.now(timezone.utc) to create a timezone-aware object
-        now = datetime.datetime.now(timezone.utc)
-        current_month_clients_count = 0
-        monthly_counts = {}
+        # Distributor List Data (for the embedded list)
+        "employees": distributors,
+        "total_employees": len(distributors),
 
-        for doc in clients_snapshot:
-            client = doc.to_dict()
-            client['id'] = doc.id
+        # Client Data and KPIs (for dashboard metrics and optional client lists)
+        "clients": client_metrics['clients'],
+        "kpi_total_clients": client_metrics['kpi_total_clients'],
+        "kpi_clients_month": client_metrics['kpi_clients_month'],
+        # Note: kpi_top_distributor now contains the live name and count
+        "kpi_top_distributor": client_metrics['kpi_top_distributor'],
+        "clients_entered": client_metrics['clients_entered'],
+    }
 
-            owner_id = client.get('ownerId', 'Unknown')
-
-            # Data Join: Link the client to the distributor's name
-            client['distributor_name'] = distributor_map.get(owner_id, owner_id)
-
-            # Date Handling and Formatting
-            log_timestamp = client.get('dateLogged')
-            if log_timestamp:
-                # FIX: Assuming the DatetimeWithNanoseconds object is already a naive Python
-                # datetime, we set the timezone directly using .replace(), which should be safe.
-                log_date = log_timestamp.replace(tzinfo=timezone.utc)
-            else:
-                # If no timestamp, use the current time (UTC)
-                log_date = now
-
-            # Format the date for easy display in the Django template
-            client['date_logged_formatted'] = log_date.strftime('%b %d, %Y %I:%M %p')
-
-            # 3. KPI Calculation (Monthly Counts and Leaderboard Tally)
-            if log_date.month == now.month and log_date.year == now.year:
-                current_month_clients_count += 1
-                monthly_counts[owner_id] = monthly_counts.get(owner_id, 0) + 1
-
-            clients_data.append(client)
-
-        # 4. Calculate Top Distributor KPI
-        top_distributor_id = max(monthly_counts, key=monthly_counts.get, default=None)
-        top_distributor_kpi = 'N/A'
-        if top_distributor_id:
-            max_clients = monthly_counts[top_distributor_id]
-            name = distributor_map.get(top_distributor_id, 'Unknown')
-            # Use safe formatting for the template to render HTML content
-            top_distributor_kpi = f"{name} <span class=\"text-base text-gray-500 font-normal\">({max_clients} leads)</span>"
-
-        # 5. Prepare Context for Template
-        context = {
-            'clients': clients_data,
-            'kpi_total_clients': len(clients_data),
-            'kpi_clients_month': current_month_clients_count,
-            'kpi_top_distributor': top_distributor_kpi,
-            'user_email': request.session.get("user", {}).get("email", "Admin")  # Get logged in user's email
-        }
-
-        # 6. Render the Django template
-        return render(request, 'admin_client_list.html', context)
-
-    except Exception as e:
-        # Crucial for debugging: log the full error
-        print(f"Admin Client List Rendering Error: {e}")
-        # Return an empty list and an error message to the template
-        return render(request, 'admin_client_list.html', {
-            'error_message': f'Failed to load client data: {e}',
-            'clients': [],
-            # Reset KPIs for the error state
-            'kpi_total_clients': 0,
-            'kpi_clients_month': 0,
-            'kpi_top_distributor': 'Error'
-        })
+    return render(request, "admin_client_list.html", context)

@@ -1,0 +1,287 @@
+{% load static %}
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact ">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+
+    <script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-5DDHKGP"></script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-5DDHKGP');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="{% static 'estate/css/boxicons.css' %}"/>
+    <link rel="stylesheet" href="{% static 'estate/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'estate/css/flag-icons.css' %}">
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'estate/css/demo.css' %}">
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static 'estate/css/perfect-scrollbar.css' %}">
+    <link rel="stylesheet" href="{% static 'estate/css/typeahead.css' %}">
+    <link rel="stylesheet" href="{% static 'estate/css/dropzone.css' %}" />
+    <link rel="stylesheet" href="{% static 'estate/css/apex-charts.css' %}">
+    <link rel="stylesheet" href="{% static 'estate/css/datatables.bootstrap5.css' %}">
+    <link rel="stylesheet" href="{% static 'estate/css/responsive.bootstrap5.css' %}">
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="{% static 'estate/css/app-logistics-dashboard.css' %}">
+
+    <!-- Helpers -->
+    <script src="{% static 'estate/js/helpers.js' %}"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="{% static 'estate/js/template-customizer.js' %}"></script>
+    <style>#template-customizer{font-family:"Open Sans",BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;font-size:inherit !important;position:fixed;top:0;right:0;height:100%;z-index:99999999;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:400px;-webkit-box-shadow:0px .3125rem 1.375rem 0px rgba(34,48,62,.18);box-shadow:0px .3125rem 1.375rem 0px rgba(34,48,62,.18);-webkit-transition:all .2s ease-in;-o-transition:all .2s ease-in;transition:all .2s ease-in;-webkit-transform:translateX(420px);-ms-transform:translateX(420px);transform:translateX(420px)}.dark-style #template-customizer{-webkit-box-shadow:0px .3125rem 1.375rem 0px rgba(20,20,29,.26);box-shadow:0px .3125rem 1.375rem 0px rgba(20,20,29,.26)}#template-customizer h5{position:relative;font-size:11px}#template-customizer>h5{flex:0 0 auto}#template-customizer .disabled{color:#d1d2d3 !important}#template-customizer .form-label{font-size:.9375rem;font-weight:500}#template-customizer .form-check-label{font-size:.8125rem}#template-customizer.template-customizer-open{-webkit-transition-delay:.1s;-o-transition-delay:.1s;transition-delay:.1s;-webkit-transform:none !important;-ms-transform:none !important;transform:none !important}#template-customizer.template-customizer-open .custom-option.checked{color:var(--bs-primary);border-width:2px;margin:0}#template-customizer .template-customizer-header a:hover{color:inherit !important}#template-customizer .template-customizer-open-btn{position:absolute;top:180px;left:0;z-index:-1;display:block;width:38px;height:38px;border-top-left-radius:.375rem;border-bottom-left-radius:.375rem;background:var(--bs-primary);box-shadow:0px .125rem .25rem 0px rgba(105,108,255,.4);color:#fff !important;text-align:center;font-size:18px !important;line-height:38px;opacity:1;-webkit-transition:all .1s linear .2s;-o-transition:all .1s linear .2s;transition:all .1s linear .2s;-webkit-transform:translateX(-58px);-ms-transform:translateX(-58px);transform:translateX(-58px)}@media(max-width: 991.98px){#template-customizer .template-customizer-open-btn{top:145px}}.dark-style #template-customizer .template-customizer-open-btn{background:var(--bs-primary)}#template-customizer .template-customizer-open-btn::before{content:"";width:22px;height:22px;display:block;background-size:100% 100%;position:absolute;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAABClJREFUaEPtmY1RFEEQhbsjUCIQIhAiUCNQIxAiECIQIxAiECIAIpAMhAiECIQI2vquZqnZvp6fhb3SK5mqq6Ju92b69bzXf6is+dI1t1+eAfztG5z1BsxsU0S+ici2iPB3vm5E5EpEDlSVv2dZswFIxv8UkZcNy+5EZGcuEHMCOBeR951uvVDVD53vVl+bE8DvDu8Pxtyo6ta/BsByg1R15Bwzqz5/LJgn34CZwfnPInI4BUB6/1hV0cSjVxcAM4PbcBZjL0XklIPN7Is3fLCkdQPpPYw/VNXj5IhPIvJWRIhSl6p60ULWBGBm30Vk123EwRxCuIzWkkjNrCZywith10ewE1Xdq4GoAjCz/RTXW44Ynt+LyBEfT43kYfbj86J3w5Q32DNcRQDpwF+dkQXDMey8xem0L3TEqB4g3PZWad8agBMRgZPeu96D1/C2Zbh3X0p80Op1xxloztN48bMQQNoc7+eLEuAoPSPiIDY4Ooo+E6ixeNXM+D3GERz2U3CIqMstLJUgJQDe+7eq6mub0NYEkLAKwEHkiBQDCZtddZCZ8d6r7JDwFkoARklHRPZUFVDVZWbwGuNrC4EfdOzFrRABh3Wnqhv+d70AEBLGFROPmeHlnM81G69UdSd6IUuM0GgUVn1uqWmg5EmMfBeEyB7Pe3txBkY+rGT8j0J+WXq/BgDkUCaqLgEAnwcRog0veMIqFAAwCy2wnw+bI2GaGboBgF9k5N0o0rUSGUb4eO0BeO9j/GYhkSHMHMTIqwGARX6p6a+nlPBl8kZuXMD9j6pKfF9aZuaFOdJCEL5D4eYb9wCYVCanrBmGyii/tIq+SLj/HQBCaM5bLzwfPqdQ6FpVHyra4IbuVbXaY7dETC2ESPNNWiIOi69CcdgSMXsh4tNSUiklMgwmC0aNd08Y5WAES6HHehM4gu97wyhBgWpgqXsrASglprDy7CwhehMZOSbK6JMSma+Fio1KltCmlBIj7gfZOGx8ppQSXrhzFnOhJ/31BDkjFHRvOd09x0mRBA9SFgxUgHpQg0q0t5ymPMlL+EnldFTfDA0NAmf+OTQ0X0sRouf7NNkYGhrOYNrxtIaGg83MNzVDSe3LXLhP7O/yrCsCz1zlWTpjWkuZAOBpX3yVnLqI1yLCOKU6qMrmP7SSrUEw54XF4WBIK5FxCMOr3lVsfGqNSmPzBXUnJTIX1jyVBq9wO6UObOpgC5GjO98vFKnTdQMZXxEsWZlDiCZMIxAbNxQOqlpVZtobejBaZNoBnRDzMFpkxvTQOD36BlrcySZuI6p1ACB6LU3wWuf5581+oHfD1vi89bz3nFUC8Nm7ZlP3nKkFbM4bWPt/MSFwklprYItwt6cmvpWJ2IVcQBCz6bLysSCv3SaANCiTsnaNRrNRqMXVVT1/BrAqz/buu/Y38Ad3KC5PARej0QAAAABJRU5ErkJggg==);top:50%;left:50%;transform:translate(-50%, -50%)}.customizer-hide #template-customizer .template-customizer-open-btn{display:none}[dir=rtl] #template-customizer .template-customizer-open-btn{border-radius:0;border-top-right-radius:.375rem;border-bottom-right-radius:.375rem}[dir=rtl] #template-customizer .template-customizer-open-btn::before{margin-left:-2px}#template-customizer.template-customizer-open .template-customizer-open-btn{opacity:0;-webkit-transition-delay:0s;-o-transition-delay:0s;transition-delay:0s;-webkit-transform:none !important;-ms-transform:none !important;transform:none !important}#template-customizer .template-customizer-inner{position:relative;overflow:auto;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:0 1 auto;opacity:1;-webkit-transition:opacity .2s;-o-transition:opacity .2s;transition:opacity .2s}#template-customizer .template-customizer-inner>div:first-child>hr:first-of-type{display:none !important}#template-customizer .template-customizer-inner>div:first-child>h5:first-of-type{padding-top:0 !important}#template-customizer .template-customizer-themes-inner{position:relative;opacity:1;-webkit-transition:opacity .2s;-o-transition:opacity .2s;transition:opacity .2s}#template-customizer .template-customizer-theme-item{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;align-items:center;-ms-flex-align:center;-webkit-box-flex:1;-ms-flex:1 1 100%;flex:1 1 100%;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;margin-bottom:10px;padding:0 24px;width:100%;cursor:pointer}#template-customizer .template-customizer-theme-item input{position:absolute;z-index:-1;opacity:0}#template-customizer .template-customizer-theme-item input~span{opacity:.25;-webkit-transition:all .2s;-o-transition:all .2s;transition:all .2s}#template-customizer .template-customizer-theme-item .template-customizer-theme-checkmark{display:inline-block;width:6px;height:12px;border-right:1px solid;border-bottom:1px solid;opacity:0;-webkit-transition:all .2s;-o-transition:all .2s;transition:all .2s;-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}[dir=rtl] #template-customizer .template-customizer-theme-item .template-customizer-theme-checkmark{border-right:none;border-left:1px solid;-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg);transform:rotate(-45deg)}#template-customizer .template-customizer-theme-item input:checked:not([disabled])~span,#template-customizer .template-customizer-theme-item:hover input:not([disabled])~span{opacity:1}#template-customizer .template-customizer-theme-item input:checked:not([disabled])~span .template-customizer-theme-checkmark{opacity:1}#template-customizer .template-customizer-theme-colors span{display:block;margin:0 1px;width:10px;height:10px;border-radius:50%;-webkit-box-shadow:0 0 0 1px rgba(0,0,0,.1) inset;box-shadow:0 0 0 1px rgba(0,0,0,.1) inset}#template-customizer.template-customizer-loading .template-customizer-inner,#template-customizer.template-customizer-loading-theme .template-customizer-themes-inner{opacity:.2}#template-customizer.template-customizer-loading .template-customizer-inner::after,#template-customizer.template-customizer-loading-theme .template-customizer-themes-inner::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:999;display:block}@media(max-width: 1200px){#template-customizer{display:none;visibility:hidden !important}}@media(max-width: 575.98px){#template-customizer{width:300px;-webkit-transform:translateX(320px);-ms-transform:translateX(320px);transform:translateX(320px)}}.layout-menu-100vh #template-customizer{height:100vh}[dir=rtl] #template-customizer{right:auto;left:0;-webkit-transform:translateX(-420px);-ms-transform:translateX(-420px);transform:translateX(-420px)}[dir=rtl] #template-customizer .template-customizer-open-btn{right:0;left:auto;-webkit-transform:translateX(58px);-ms-transform:translateX(58px);transform:translateX(58px)}[dir=rtl] #template-customizer .template-customizer-close-btn{right:auto;left:0}#template-customizer .template-customizer-layouts-options[disabled]{opacity:.5;pointer-events:none}[dir=rtl] .template-customizer-t-style_switch_light{padding-right:0 !important}</style>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static 'estate/js/config.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'estate/css/core.css' %}" class="template-customizer-core-css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'estate/css/theme-default.css' %}" class="template-customizer-theme-css' %}">
+
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- designing the name of the company  -->
+    <style>
+          .pink-blue-gradient-text {
+              background-image: radial-gradient(circle, #144ee3, #f35792);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            }
+
+            .blue-pink-gradient-text {
+              background-image: radial-gradient(circle, #f35792, #144ee3);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            }
+
+            a {
+              text-decoration: none;
+            }
+      </style>
+    <!-- changing the color theme of the side nav bar  -->
+    <style>
+          /* custom.css */
+            #layout-menu {
+                background-color: #483d8b !important; /* Dark Slate Blue */
+                color: #fff; /* White text color for better contrast */
+            }
+
+            #layout-menu .menu-item a.menu-link {
+                color: #fff; /* Ensure the text inside menu links is white */
+            }
+
+            #layout-menu .menu-item a.menu-link:hover {
+                background-color: #6a5acd; /* Slate Blue for hover effect */
+            }
+        </style>
+
+    {% block add_css %}
+    {% endblock %}
+
+</head>
+
+<body>
+  <!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar  ">
+  <div class="layout-container">
+    <!-- Menu -->
+      <aside id="layout-menu" class="bg-menu-theme layout-menu menu menu-vertical">
+
+          <div class="navbar-brand mx-4 mb-3 mt-4">
+            <img class="rounded-circle" src="{% static 'estate/img/com_logo.jpeg' %}" alt="" style="width: 80px; margin-left:70px">
+            <h5 class="text-info" style="margin-top:5px;text-align:center"><span class="blue-pink-gradient-text">Century Properties</span><br><span class="pink-blue-gradient-text">&amp;</span><br><span class="pink-blue-gradient-text">Real Estates Ltd</span></h5>
+          </div>
+
+          <div class="d-flex align-items-center ms-4 mb-4">
+              <div class="position-relative">
+                  <img class="rounded-circle" src="#" alt="" style="width: 40px; height: 40px;">
+                  <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+              </div>
+              <div class="ms-3">
+                  <h6 class="mb-0 text-success">Welcome {{ user.email }}</h6>
+              </div>
+          </div>
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+              <!-- Dashboard -->
+              <li class="menu-item active"><a href="#" class="menu-link">
+                  <i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+              </li>
+
+               <li class="menu-item active"><a href="#" class="menu-link">
+                   <i class="fas fa-users me-2"></i>Distributor Form</a>
+              </li>
+
+              <li class="menu-item active"><a href="#" class="menu-link">
+                   <i class="fa fa-area-chart custom me-2" style="font-size:20px"></i>Edit created Land</a>
+              </li>
+              <li class="menu-item"><a href="{% url 'admin_client_list' %}" class="menu-link">
+                   <i class="fas fa-users me-2"></i>Clients</a>
+              </li>
+
+              <li class="menu-item"><a href="#" class="menu-link">
+                  <i class="fa fa-gear me-2"></i>Settings</a>
+              </li>
+
+          </ul>
+      </aside>
+    <!-- / Menu -->
+    <!-- Layout container -->
+    <div class="layout-page">
+
+      {% block Navbar %}
+      <!-- Navbar -->
+      <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)"> <i class="fa fa-bars" aria-hidden="true"></i> </a>
+            </div>
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                <!-- Search -->
+                <div class="navbar-nav align-items-center">
+                    <div class="nav-item d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396l1.414-1.414l-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8s3.589 8 8 8m0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6s-6-2.691-6-6s2.691-6 6-6"/>
+                        </svg>
+                        <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..."/>
+                    </div>
+                </div>
+                <!-- /Search -->
+
+
+                <div class="nav-item dropdown align-items-center ms-auto">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="rounded-circle" src="{{user.employee.profile_pic.url}}" alt="" style="width:50px; height:50px">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end border-0 rounded-0 rounded-bottom m-0">
+                        <a class="dropdown-item" href="#"><i class="fas fa-user-edit text-warning"></i> Edit Profile</a>
+                        <!-- <a href="#" class="dropdown-item">Settings</a> -->
+                        <a href="#" class="dropdown-item"><i class="fas fa-user-cog text-success"></i> Change Password</a>
+                        <form method="post" action="{% url 'logout_form' %}">
+                            {% csrf_token %}
+                            <button class="dropdown-item"><i class="fas fa-sign-in-alt text-primary"></i> Log out</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+      </nav>
+      <!-- / Navbar -->
+      {% endblock Navbar %}
+
+      <!-- Content wrapper -->
+      <div class="content-wrapper">
+          <!-- Content -->
+          <div class="container-xxl flex-grow-1 container-p-y">
+               {% block content %}
+               {% endblock %}
+          </div>
+          <!-- / Content -->
+
+        <!-- Footer -->
+         <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl">
+                    <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+
+                        <div class="col-12 col-sm-6 text-center text-sm-start">
+                            &copy; <a href="#">@AcDantez</a>, All Right Reserved.
+                        </div>
+                        <div class="col-12 col-sm-6 text-center text-sm-end">
+                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                            Designed By <a href="#">@AcDantez</a>
+                            <br>Distributed By: <a href="#">@AcDantez</a>
+                        </div>
+                    </div>
+              </div>
+          </footer>
+         <!-- / Footer -->
+
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!-- Content wrapper -->
+      </div>
+      <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div>
+
+  </div>
+  <!-- / Layout wrapper -->
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <!-- / Layout wrapper -->
+    <!-- Core JS -->
+
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="{% static 'estate/js/jquery.js' %}"></script>
+    <script src="{% static 'estate/js/popper.js' %}"></script>
+    <script src="{% static 'estate/js/bootstrap.js' %}"></script>
+    <script src="{% static 'estate/js/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'estate/js/menu.js' %}"></script>
+    <script src="{% static 'estate/js/dropzone.js' %}"></script>
+
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script src="{% static 'estate/js/apexcharts.js' %}"></script>
+    <!-- Main JS -->
+    <script src="{% static 'estate/js/main.js' %}"></script>
+    <script src="{% static 'estate/js/forms-file-upload.js' %}"></script>
+    <!-- Page JS -->
+    <script src="{% static 'estate/js/dashboards-analytics.js' %}"></script>
+    <!-- My scriptys-->
+    <script type="text/javascript" src="{% static 'estate/js/loader.js' %}"></script>
+
+    <script src="{% static 'estate/js/jquery.min.js' %}"></script>
+    <script src="{% static 'estate/js/js.cookie.min.js' %}"></script>
+    <!-- endbuild -->
+
+     <!-- Vendors JS -->
+    <script src="{% static 'estate/js/apexcharts.js' %}"></script>
+
+    <!-- Main JS -->
+    <script src="{% static 'estate/js/main.js' %}"></script>
+    <!-- Page JS -->
+    <script src="{% static 'estate/js/app-logistics-dashboard.js' %}"></script>
+
+    <script src="{% static 'js/js.cookie.min.js' %}"></script>
+
+    <script type="text/javascript">
+      var csrftoken = Cookies.get('csrftoken');
+          function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+          }
+          $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+            }
+          });
+
+        $(document).ready(function () {
+
+            {% block domready %}
+            {% endblock %}
+
+        });
+    </script>
+    {% block add_js %}
+    {% endblock %}
+</body>
+</html>
