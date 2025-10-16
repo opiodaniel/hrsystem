@@ -7,8 +7,50 @@
 
 
 {% block content %}
+
+  <!-- Toast Notification Container (for custom JS toasts) -->
+        <div id="toast-container" aria-live="polite" aria-atomic="true">
+            <!-- Toasts will be appended here by the showToast function -->
+        </div>
+
   <div class="row g-6">
           <!-- Card Border Shadow -->
+        <div class="col-lg-3 col-sm-6">
+            <div class="card card-border-shadow-danger h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar me-4">
+                    <span class="avatar-initial rounded bg-label-danger"><i class="fa fa-users text-warning" aria-hidden="true" style='font-size:50px;'></i></span>
+                  </div>
+                  <h4 class="mb-0">{{ total_employees }}</h4>
+                </div>
+                <p class="mb-2">Distributors</p>
+                <p class="mb-0">
+                  <span class="text-heading fw-medium me-2">5</span>
+                  <span class="text-muted">Distributors Added (This Month)</span>
+                </p>
+              </div>
+            </div>
+        </div>
+
+          <div class="col-lg-3 col-sm-6">
+            <div class="card card-border-shadow-primary h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar me-4">
+                    <span class="avatar-initial rounded bg-label-info"><i class="fa fa-users " aria-hidden="true" style='font-size:40px;color:blue'></i></span>
+                  </div>
+                  <h4 class="mb-0">{{kpi_total_clients}}</h4>
+                </div>
+                <p class="mb-2">My Clients</p>
+                <p class="mb-0">
+                  <span class="text-heading fw-medium me-2">{{ kpi_clients_month|default:0 }}</span>
+                  <span class="text-muted">Clients Added (This Month)</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div class="col-lg-3 col-sm-6">
             <div class="card card-border-shadow-success h-100">
               <div class="card-body">
@@ -16,14 +58,12 @@
                   <div class="avatar me-4">
                     <span class="avatar-initial rounded bg-label-success"><i class="fa fa-chart-line fa-3x text-success"></i></span>
                   </div>
-                  <h4 class="mb-0">{{ total_commission }}</h4>
+                  <h4 class="mb-0">{{ kpi_top_distributor|default:"N/A"|safe }}</h4>
                 </div>
-                <p class="mb-2">Total Commission</p>
+                <p class="mb-2">Top Generator</p>
                 <p class="mb-0">
-                  <!--
-                  <span class="text-heading fw-medium me-2">+18.2%</span>
-                  <span class="text-muted">than last week</span>
-                  -->
+                  <span class="text-heading fw-medium me-2">{{ kpi_top_distributor_count }}</span>
+                  <span class="text-muted">Clients Added (This Month)</span>
                 </p>
               </div>
             </div>
@@ -47,48 +87,68 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-3 col-sm-6">
-            <div class="card card-border-shadow-danger h-100">
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                  <div class="avatar me-4">
-                    <span class="avatar-initial rounded bg-label-danger"><i class="fa fa-chart-area text-danger" aria-hidden="true" style='font-size:40px;'></i></span>
-                  </div>
-                  <h4 class="mb-0">{{ balance}}</h4>
-                </div>
-                <p class="mb-2">Total Balance</p>
-                <p class="mb-0">
-                  <!--
-                  <span class="text-heading fw-medium me-2">+4.3%</span>
-                  <span class="text-muted">than last week</span>
-                  -->
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-sm-6">
-            <div class="card card-border-shadow-primary h-100">
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                  <div class="avatar me-4">
-                    <span class="avatar-initial rounded bg-label-info"><i class="fa fa-users " aria-hidden="true" style='font-size:40px;color:blue'></i></span>
-                  </div>
-                  <h4 class="mb-0">{{total_number_of_clients}}</h4>
-                </div>
-                <p class="mb-2">All Clients</p>
-                <p class="mb-0">
-                  <!--
-                  <span class="text-heading fw-medium me-2">-2.5%</span>
-                  <span class="text-muted">than last week</span>
-                  -->
-                </p>
-              </div>
-            </div>
-          </div>
           <!--/ Card Border Shadow -->
 
+         <!-- Shipment statistics-->
+          <div class="col-xxl-4 col-lg-5">
+            <div class="card h-100">
+              <div class="card-header d-flex justify-content-between">
+              </div>
+              <div class="">
+                <!-- Main Leaderboard Card Container -->
+                <div class="container">
+                    <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+                        <!-- Header -->
+                        <div class="card-header bg-primary text-white text-center py-4 rounded-top">
+                            <h1 class="h3 fw-bold mb-0">Top Distributors</h1>
+                            <p class="mb-0 text-white-50">Clients Logged This Month</p>
+                        </div>
+
+                        <!-- Leaderboard List (List Group) -->
+                        <ul class="list-group list-group-flush">
+                            {% for leader in leaderboard_list %}
+                            <!-- RANK 1: GOLD WINNER -->
+                                <li class="list-group-item
+                                    {% if forloop.counter == 1 %}rank-gold{% elif forloop.counter == 2 %}rank-silver{% elif forloop.counter == 3 %}rank-bronze{% endif %}
+                                    d-flex justify-content-between align-items-center border-0
+                                    {% if forloop.counter < 3 %}border-bottom{% endif %}">
+
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-3">
+
+                                            <!-- CONDITIONAL ICON/RANK DISPLAY -->
+                                            {% if forloop.counter == 1 %}
+                                                <span class="p-1 rounded-circle text-warning-emphasis">
+                                                    <svg class="crown-icon text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M5 15S4 12 7 12s3 2 4 2s3-2 4-2s3 2 4 2V3h-3l-1 5-2-5-2 5-2-5-1 5H5z"/>
+                                                    </svg>
+                                                </span>
+                                            {% else %}
+                                                <!-- Display numerical rank for 2 and 3 -->
+                                                <span class="h5 fw-bold text-muted" style="min-width: 1.5rem; text-align: center;">{{ forloop.counter }}</span>
+                                            {% endif %}
+                                        </span>
+
+                                        <div class="name-text fw-bolder">{{ leader.name }}</div>
+                                    </div>
+                                    <!-- Client Count -->
+                                    <div class="d-flex align-items-center">
+                                        <span class="count-text fw-bolder text-primary me-2">{{ leader.count }}</span>
+                                        <span class="badge bg-secondary-subtle text-secondary d-none d-sm-inline">Clients</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!--/ Shipment statistics -->
+
           <!-- Vehicles overview -->
-          <div class="col-xxl-4">
+          <div class="col-xxl-8">
             <div class="card h-80">
               <div class="card-header d-flex align-items-center justify-content-between">
                 <div class="card-title mb-0">
@@ -101,44 +161,6 @@
             </div>
           </div>
           <!--/ Vehicles overview -->
-
-         <!-- Shipment statistics-->
-          <div class="col-xxl-8 col-lg-5">
-            <div class="card h-100">
-              <div class="card-header d-flex justify-content-between">
-                <div class="card-title mb-0">
-                  <h5 class="mb-1 me-2">LeadBoard(Top 5)</h5>
-                  <!--<p class="card-subtitle">12% increase in this month</p>-->
-                </div>
-              </div>
-              <div class="card-body">
-                {% for top_employee in top_employees %}
-                <ul class="p-0 m-0">
-                  <li class="d-flex mb-6 align-items-center">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img class="rounded-circle flex-shrink-0" src="{{ top_employee.profile_pic.url }}" alt="" style="width: 50px; height: 50px;">
-                    </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-1 fw-normal">{{ top_employee }}</h6>
-                        <p class="text-success mb-0">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
-                              <path fill="currentColor" d="m6.293 13.293l1.414 1.414L12 10.414l4.293 4.293l1.414-1.414L12 7.586z"/>
-                          </svg>
-                          {{ top_employee.clients_count }} clients
-                        </p>
-                      </div>
-                      <div class="user-progress">
-                        <!--<h6 class="mb-0">10k</h6>-->
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-          <!--/ Shipment statistics -->
 
 
           <div class="container-fluid py-4">
@@ -185,17 +207,20 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Right Column: My Clients List (col-lg-8 equivalent to lg:col-span-2) -->
+                        <!-- Right Column: My Clients List -->
                 <div class="col-12 col-lg-8">
-                    <div class="card shadow-lg border-0 h-100">
+                    <div class="card shadow-lg border-0">
                         <div class="card-body p-4">
-                            <h2 class="h4 fw-bold text-dark mb-4 border-bottom pb-2">My Clients (158 Total)</h2>
 
-                            <!-- Search and Filter -->
-                            <div class="mb-4 d-flex gap-2">
-                                <input type="text" placeholder="Filter by client name..." class="form-control flex-grow-1">
-                                <button class="btn btn-outline-secondary">Search</button>
+                            <div class="card-header bg-primary text-white py-3">
+                                <h2 class="h5 mb-0 d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-people-fill me-2" viewBox="0 0 16 16">
+                                      <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm-4 1s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1z"/>
+                                      <path fill-rule="evenodd" d="M12 2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2zm-2 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0m2-6a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                                    </svg>
+                                    My Clients
+                                    <span class="badge bg-secondary ms-2 rounded-pill">{{ kpi_total_clients|default:0 }} Total</span>
+                                </h2>
                             </div>
 
                             <!-- Client List Table -->
@@ -205,32 +230,31 @@
                                         <tr>
                                             <th scope="col" class="text-uppercase text-secondary fs-6 fw-medium">Client Name</th>
                                             <th scope="col" class="text-uppercase text-secondary fs-6 fw-medium">Contact 1</th>
+                                            <th scope="col" class="text-center text-uppercase text-secondary fs-6 fw-medium">Date Logged</th>
                                             <th scope="col" class="text-center text-uppercase text-secondary fs-6 fw-medium">Update</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Client Data (DUMMY) -->
-                                        <tr>
-                                            <td>Acme Corporation</td>
-                                            <td>909-555-1212</td>
-                                            <td class="text-center">
-                                                <span class="badge rounded-pill text-bg-primary">Edit</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Globex Holdings</td>
-                                            <td>john@globex.com</td>
-                                            <td class="text-center">
-                                                <span class="badge rounded-pill text-bg-primary">Edit</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Stark Industries</td>
-                                            <td>212-555-4444</td>
-                                            <td class="text-center">
-                                                <span class="badge rounded-pill text-bg-primary">Edit</span>
-                                            </td>
-                                        </tr>
+                                    <tbody id="client-list-body">
+                                        <!-- DATA IS POPULATED VIA SERVER-SIDE TEMPLATING HERE -->
+                                        {% if clients %}
+                                            {% for client in clients %}
+                                                <tr>
+                                                    <td class="text-nowrap">{{ client.fullName }}</td>
+                                                    <td class="text-nowrap">{{ client.contact1 }}</td>
+                                                    <td class="text-center text-nowrap">{{ client.dateLogged|default:"N/A" }}</td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-info">Edit</button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">
+                                                    You have no client leads yet. Use the form on the left!
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        <!-- END SERVER-SIDE POPULATION -->
                                     </tbody>
                                 </table>
                             </div>
@@ -240,29 +264,24 @@
             </div>
           </div>
 
-<!-- Toast Notification Container (for custom JS toasts) -->
-<div id="toast-container" aria-live="polite" aria-atomic="true">
-    <!-- Toasts will be appended here by the showToast function -->
-</div>
-
-<!-- Reusable Bootstrap Modal -->
-<div class="modal fade" id="detail-modal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailModalLabel">Client Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Modal content goes here -->
-                <p>This is a reusable modal using the standard Bootstrap component.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!-- Reusable Bootstrap Modal -->
+        <div class="modal fade" id="detail-modal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailModalLabel">Client Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Modal content goes here -->
+                        <p>This is a reusable modal using the standard Bootstrap component.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
 
 
@@ -423,10 +442,7 @@
                     submitBtn.prop('disabled', false);
                 }
             });
-
         });
-
-
     });
 </script>
 

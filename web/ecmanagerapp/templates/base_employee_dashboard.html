@@ -8,34 +8,89 @@
        {% block add_css %}
          <script src="{% static 'js/jquery-3.3.1.js' %}"></script>
          <script src="{% static 'js/bootstrap.min.js' %}"></script>
-         <style>
-            table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
+         <!-- Custom Styles -->
+        <style>
+            body {
+                background-color: #f8f9fa;
+                font-family: 'Inter', sans-serif;
+            }
+            .form-card {
+                /* Makes the form stay put on the screen when scrolling the list */
+                position: sticky;
+                top: 1.5rem;
+            }
+            #toast-container {
+                position: fixed;
+                bottom: 1rem;
+                right: 1rem;
+                z-index: 1080;
+            }
+            .custom-toast {
+                min-width: 250px;
+                opacity: 0;
+                transform: translateY(10px);
+                transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            }
+            .custom-toast.show-toast {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .table .badge {
+                min-width: 70px;
+            }
+        </style>
+        <style>
+        /* Custom styles to enhance the Bootstrap look, specifically for top ranks */
+        body {
+            background-color: #f8f9fa; /* Bootstrap light background */
+            padding-top: 2rem;
+        }
 
-                    th, td {
-                        padding: 8px;
-                        border: 1px solid black;
-                    }
+        /* 1st Place Styling: Gold background, bold border, and slight lift */
+        .rank-gold {
+            background-color: #ffd700 !important; /* Gold */
+            border-color: #ccac00 !important;
+            color: #212529; /* Dark text */
+            box-shadow: 0 0.5rem 1rem rgba(255, 215, 0, 0.4) !important;
+            transform: scale(1.02);
+            transition: all 0.3s ease-in-out;
+        }
 
-                    /* Truncate long text and display ellipsis */
-                    .truncate {
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
+        /* 2nd Place Styling: Light gray background */
+        .rank-silver {
+            background-color: #e9ecef !important; /* Lighter gray than standard .list-group-item */
+        }
 
-                    /* Responsive styles */
-                    @media screen and (max-width: 600px) {
-                        th, td {
-                            padding: 4px;
-                        }
+        /* 3rd Place Styling: Light orange/warning */
+        .rank-bronze {
+            background-color: #ffe5b4 !important; /* Light Bronze/Amber */
+        }
 
-                        .truncate {
-                                max-width: 90px; /* Adjust max-width as needed */
-                            }
-                    }
+        /* Crown SVG for 1st place */
+        .crown-icon {
+            fill: currentColor;
+            width: 1.25rem;
+            height: 1.25rem;
+            vertical-align: middle;
+            margin-right: 0.25rem;
+        }
+
+        .count-text {
+            font-size: 1.8rem; /* Make the number pop */
+        }
+
+        /* Responsive spacing for smaller screens */
+        @media (max-width: 576px) {
+            .count-text {
+                font-size: 1.5rem;
+            }
+            .name-text {
+                font-size: 1rem;
+            }
+            .list-group-item {
+                padding: 0.75rem 1rem;
+            }
+        }
         </style>
        {% endblock %}
 

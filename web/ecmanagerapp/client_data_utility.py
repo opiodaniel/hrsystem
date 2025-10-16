@@ -9,7 +9,7 @@ import sys
 db = firestore.client()
 
 
-def get_client_dashboard_data():
+def get_client_data():
     """
     Fetches all client data from Firestore, joins with distributor names,
     calculates monthly and total KPIs, and returns a dictionary of results.
@@ -91,13 +91,13 @@ def get_client_dashboard_data():
             name = distributor_map.get(top_distributor_id, 'Unknown')
             # Use safe formatting for the template
             top_distributor_kpi = name
-            clients_entered = max_clients
+            num_clients = max_clients
 
         # 5. Compile Final Results
         results['clients'] = clients_data
         results['kpi_total_clients'] = len(clients_data)
         results['kpi_clients_month'] = current_month_clients_count
-        results['clients_entered'] = clients_entered
+        results['num_clients'] = num_clients
         results['kpi_top_distributor'] = top_distributor_kpi
 
         return results

@@ -17,7 +17,9 @@ import datetime
 from datetime import timezone
 import pytz # Required for converting to local timezone
 from .distributor_data_utility import get_distributor_data
-from .client_data_utility import get_client_dashboard_data
+from .client_data_utility import get_client_data
+from .employee_clients_data_utility import get_employee_clients
+from .employee_leader_board_data_utility import get_monthly_leaderboard
 
 def register_form(request):
     if request.method == "POST":
@@ -54,7 +56,6 @@ def register_form(request):
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
     return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
-
 
 
 def login_form(request):
@@ -165,7 +166,37 @@ def delete_employee(request):
 @firebase_login_required
 def employee_dashboard(request):
     user = request.session.get("user")
-    return render(request, "employee_dashboard.html", {"user": user})
+    employee_id = user.get("uid") if user and user.get("uid") else "default-user-id"
+
+    # CRITICAL: Call the dedicated function to get the filtered clients
+    employee_clients = get_employee_clients(employee_id)
+
+    # 1. CALL THE UTILITY FUNCTION for Distributors
+    # This fetches the list of employees/distributors.
+    distributors = get_distributor_data()
+
+    leaderboard_list = get_monthly_leaderboard(3)
+
+    # 3. Combine ALL data into a single context dictionary
+    context = {
+        "user": user,
+
+        # Distributor List Data (for the embedded list)
+        "employees": distributors,
+        "total_employees": len(distributors),
+        "leaderboard_list": leaderboard_list,
+
+        # Client Data and KPIs (for dashboard metrics and optional client lists)
+        "clients": employee_clients['clients'],
+        "kpi_total_clients": employee_clients['kpi_total_clients'],
+        "kpi_clients_month": employee_clients['kpi_clients_month'],
+        # Note: kpi_top_distributor now contains the live name and count
+        "kpi_top_distributor": employee_clients['kpi_top_distributor_name'],
+        "kpi_top_distributor_count": employee_clients['kpi_top_distributor_count'],
+
+    }
+
+    return render(request, "employee_dashboard.html", context)
 
 
 @firebase_login_required
@@ -183,7 +214,7 @@ def admin_dashboard(request):
 
     # 2. CALL THE UTILITY FUNCTION for Clients/KPIs
     # This fetches client list, total clients, monthly leads, and top distributor data.
-    client_metrics = get_client_dashboard_data()
+    client_metrics = get_client_data()
 
     # 3. Combine ALL data into a single context dictionary
     context = {
@@ -199,7 +230,7 @@ def admin_dashboard(request):
         "kpi_clients_month": client_metrics['kpi_clients_month'],
         # Note: kpi_top_distributor now contains the live name and count
         "kpi_top_distributor": client_metrics['kpi_top_distributor'],
-        "clients_entered": client_metrics['clients_entered'],
+        "num_clients": client_metrics['num_clients'],
     }
 
     # 4. Render the dashboard template
@@ -357,7 +388,7 @@ def admin_client_list(request):
 
     # 2. CALL THE UTILITY FUNCTION for Clients/KPIs
     # This fetches client list, total clients, monthly leads, and top distributor data.
-    client_metrics = get_client_dashboard_data()
+    client_metrics = get_client_data()
 
     # 3. Combine ALL data into a single context dictionary
     context = {
@@ -373,7 +404,7 @@ def admin_client_list(request):
         "kpi_clients_month": client_metrics['kpi_clients_month'],
         # Note: kpi_top_distributor now contains the live name and count
         "kpi_top_distributor": client_metrics['kpi_top_distributor'],
-        "clients_entered": client_metrics['clients_entered'],
+        "num_clients": client_metrics['num_clients'],
     }
 
     return render(request, "admin_client_list.html", context)

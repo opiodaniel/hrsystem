@@ -31,9 +31,9 @@
                                 <tr data-client-id="{{ client.id }}">
                                     <td class="align-middle text-nowrap fw-bold">{{ client.fullName }}</td>
                                     <td class="align-middle">{{ client.contact1 }}</td>
-                                    <td class="align-middle d-none d-sm-table-cell">{{ client.contact2|default:'N/A' }}</td>
-                                    <td class="align-middle text-primary fw-medium">{{ client.distributor_name }}</td>
-                                    <td class="align-middle text-muted d-none d-md-table-cell">{{ client.date_logged_formatted }}</td>
+                                    <td class="align-middle d-none text-nowrap d-sm-table-cell">{{ client.contact2|default:'N/A' }}</td>
+                                    <td class="align-middle text-primary text-nowrap fw-medium">{{ client.distributor_name }}</td>
+                                    <td class="align-middle text-muted text-nowrap d-none d-md-table-cell">{{ client.date_logged_formatted }}</td>
                                     <td class="align-middle text-center text-nowrap">
                                         <button type="button" class="btn btn-sm btn-outline-info view-notes-btn"
                                             data-notes="{{ client.initialNotes|default:'No notes provided.' }}">

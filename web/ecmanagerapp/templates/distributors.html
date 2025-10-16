@@ -34,8 +34,8 @@
                             <tbody class="text-dark" id="employeeTableBody">
                                {% for emp in employees %}
                                 <tr data-uid="{{ emp.uid }}" data-name="{{ emp.email }}">
-                                    <td>{{ emp.full_name }}</td>
-                                    <td>{{ emp.email }}</td>
+                                    <td class="text-nowrap " >{{ emp.full_name }}</td>
+                                    <td class="text-nowrap " >{{ emp.email }}</td>
                                     <td class="text-nowrap ">{{ emp.last_login }}</td>
                                     <td>
 
